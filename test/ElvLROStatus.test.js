@@ -74,9 +74,10 @@ const LRO_BAD_DATA = {
 
 
 describe('EnhancedStatus', function () {
-  const retVal1 = EnhancedStatus(shiftTimes(LRO_1_FINISHED_1_RUNNING, 0))
-  const retVal2 = EnhancedStatus(shiftTimes(LRO_1_FINISHED_1_RUNNING, L.DEFAULT_STALL_THRESHOLD + 60))
-  const retVal3 = EnhancedStatus(LRO_BAD_DATA)
+  const now = new Date
+  const retVal1 = EnhancedStatus(shiftTimes(LRO_1_FINISHED_1_RUNNING, 0), now)
+  const retVal2 = EnhancedStatus(shiftTimes(LRO_1_FINISHED_1_RUNNING, L.DEFAULT_STALL_THRESHOLD + 60), now)
+  const retVal3 = EnhancedStatus(LRO_BAD_DATA, now)
 
 
   it('should return ok true for valid data', () => {

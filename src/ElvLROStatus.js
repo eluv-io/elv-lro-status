@@ -2,7 +2,7 @@
 // external modules
 // --------------------------------------
 
-const liftA2 = require('crocks/helpers/liftA2')
+const liftA3 = require('crocks/helpers/liftA3')
 const kindOf = require('kind-of')
 const {DateTime} = require('luxon')
 const moment = require('moment')
@@ -61,15 +61,17 @@ const ROLLUP_PRECEDENCE = {
 
 const padStart = width => str => str.padStart(width)
 
-const etaLocalString = seconds => {
+const etaLocalString = (currentTime, seconds) => {
   if (seconds < 0) {
     return 'n/a'
   }
-  const now = DateTime.local()
+  const now = DateTime.local(currentTime)
   const localEta = now.plus({seconds})
+  // if ETA is same day, return just time
   if (now.toLocaleString(DateTime.DATE_FULL) === localEta.toLocaleString(DateTime.DATE_FULL)) {
     return localEta.toLocaleString(DateTime.TIME_WITH_SHORT_OFFSET)
   } else {
+    // else include date in returned string
     return localEta.toLocaleString({
       hour: 'numeric',
       day: 'numeric',
@@ -119,7 +121,6 @@ const etaDurString = seconds => {
 const estJobTotalSeconds = (duration_ms, progress_pct) => duration_ms / (10 * progress_pct) // === (duration_ms/1000) / (progress_pct/100)
 const safePct = statusEntry => R.path(['progress', 'percentage'], statusEntry)
 
-// TODO: take into account seconds_since_last_update, then apply floor of zero
 const estSecondsLeft = statusEntry => {
   const pct = safePct(statusEntry)
   if (pct) {
@@ -129,10 +130,12 @@ const estSecondsLeft = statusEntry => {
       setBadRunState(statusEntry, STATE_BAD_PCT)
       return null
     }
-    return Math.round(
+    const result = Math.round(
       estJobTotalSeconds(statusEntry.duration_ms, pct)
-      - (statusEntry.duration_ms / 1000) // TODO: -statusEntry.seconds_since_last_update, clamp lower bound to zero
+      - (statusEntry.duration_ms / 1000)
+      - statusEntry.seconds_since_last_update
     )
+    return result < 0 ? 0 : result
   }
   return null // percent progress = 0
 }
@@ -157,14 +160,14 @@ const setBadRunState = (statusEntry, state) => {
 
 
 const lroStatusEnhance = R.curry(
-  (stallThreshold, lroStatus) => {
+  (currentTime, stallThreshold, lroStatus) => {
     const result = {LROs: R.clone(lroStatus)}
 
     // examine each entry, add fields
     for (const [lroKey, statusEntry] of Object.entries(result.LROs)) {
       if (statusEntry.run_state === STATE_RUNNING) {
         const start = moment.utc(statusEntry.start).valueOf()
-        const now = moment.utc().valueOf()
+        const now = moment.utc(currentTime).valueOf()
         const actualElapsedSeconds = Math.round((now - start) / 1000)
         const reportedElapsed = Math.round(statusEntry.duration_ms / 1000)
         const secondsSinceLastUpdate = actualElapsedSeconds - reportedElapsed
@@ -219,10 +222,11 @@ const statusSummary = enhancedLROStatusEntries => {
 }
 
 
-const EnhancedStatus = (lroStatus, stallThreshold = DEFAULT_STALL_THRESHOLD) => {
+const EnhancedStatus = (lroStatus, currentTime, stallThreshold = DEFAULT_STALL_THRESHOLD) => {
   const checkedLROStatus = M.validator(LROStatusModel)(lroStatus)
+  const checkedCurrentTime = M.validator(M.DatetimeModel)(currentTime)
   const checkedStallThreshold = M.validator(M.PositiveIntegerModel)(stallThreshold)
-  return _resultToPOJO(liftA2(lroStatusEnhance, checkedStallThreshold, checkedLROStatus))
+  return _resultToPOJO(liftA3(lroStatusEnhance, checkedCurrentTime, checkedStallThreshold, checkedLROStatus))
 }
 
 module.exports = {
@@ -239,30 +243,3 @@ module.exports = {
   STATE_STALLED,
   STATE_UNKNOWN
 }
-
-// const sampleLROStatus1 = {
-//   "tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU": {
-//     "duration": 335613000000,
-//     "duration_ms": 335613,
-//     "end": "2021-11-12T22:46:40Z",
-//     "progress": {
-//       "percentage": 100
-//     },
-//     "run_state": "finished",
-//     "start": "2021-11-12T22:41:04Z"
-//   },
-//   "tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh": {
-//     "duration": 1390740000000,
-//     "duration_ms": 1390740,
-//     "progress": {
-//       "percentage": 76.66666666666667
-//     },
-//     "run_state": "running",
-//     "start": "2021-11-12T22:41:04Z"
-//   }
-// };
-//
-//
-// const sampleResult1 = EnhancedStatus(sampleLROStatus1)
-//
-// console.log(JSON.stringify(sampleResult1,null,2))

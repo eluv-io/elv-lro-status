@@ -407,6 +407,10 @@ const NonEmptyArrayModel = def => ArrayModel(def)
     assertionErrMsg('must not be an empty array')
   ).as('ArrayNotEmpty')
 
+// Date
+//------------
+const DatetimeModel = OM.BasicModel(Date).as('Javascript Date object')
+
 // Objects
 //------------
 
@@ -464,6 +468,7 @@ module.exports = {
   BoundedFractionStringModel,
   BoundedIntegerModel,
   BoundedNumberModel,
+  DatetimeModel,
   FractionStringModel,
   fracStrComparator,
   isValid,
