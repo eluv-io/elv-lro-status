@@ -1,6 +1,6 @@
 {
   "name": "@eluvio/elv-lro-status",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library for enhancing the transcoding progress info returned by the ElvClient.LROStatus() API call",
   "homepage": "https://github.com/eluv-io/elv-lro-status",
   "main": "src/ElvABRProfile.js",
