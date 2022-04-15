@@ -8,7 +8,7 @@ the following:
 * Warnings if an LRO produces too many or too few mezzanine parts
 * A summary that rolls up all the LROs into a status for the mezzanine offering as a whole.
 
-**NOTE:** ETA computation and stall detection depend on the local system clock.   
+**NOTE:** ETA computation and stall detection depend on knowing the current time accurately. The current time is passed in as a parameter to the main function call EnhancedStatus(), allowing client to obtain current time from a source other than system clock if desired.   
 
 ## Installation
 
@@ -43,7 +43,8 @@ const status = await client.LROStatus({
 // check to make sure we received data back
 if (status === undefined) throw Error("Received no job status information from server - object already finalized?");
 
-const enhancedStatus = LRO.EnhancedStatus(status);
+const currentTime = new Date;
+const enhancedStatus = LRO.EnhancedStatus(status, currentTime);
 
 if (enhancedStatus.ok) {
   console.log('Individual LRO statuses');
@@ -273,4 +274,4 @@ then `EnhancedStatus()` would return:
 ```
 
 Usually, an `ok` value of `false` indicates that `ElvClient.LROStatus()` returned data in an unexpected format or with
-unexpected values.
+unexpected values. Passing in something other than a Javascript Date object for the current time would also cause `ok` to be `false`.
