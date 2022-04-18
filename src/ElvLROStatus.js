@@ -1,13 +1,15 @@
+// ElvLROStatus.js
+//
+// A library for enhancing the transcoding progress info returned by the elv-client-js LROStatus() API call
+
 // --------------------------------------
 // external modules
 // --------------------------------------
 
 const liftA3 = require('crocks/helpers/liftA3')
 const kindOf = require('kind-of')
-const {DateTime} = require('luxon')
-const moment = require('moment')
+const {DateTime, Duration} = require('luxon')
 const R = require('ramda')
-
 
 // --------------------------------------
 // internal modules
@@ -29,7 +31,6 @@ const {
 // --------------------------------------
 // external functions
 // --------------------------------------
-
 
 const DEFAULT_STALL_THRESHOLD = 15 * 60 // 15 minutes
 
@@ -59,8 +60,6 @@ const ROLLUP_PRECEDENCE = {
   [STATE_CANCELLED_USER]: 9
 }
 
-const padStart = width => str => str.padStart(width)
-
 const etaLocalString = (currentTime, seconds) => {
   if (seconds < 0) {
     return 'n/a'
@@ -83,43 +82,36 @@ const etaLocalString = (currentTime, seconds) => {
   }
 }
 
-// Converts seconds to right-aligned string in "##d ##h ##m ##s " format
-// Unneeded larger units are omitted, e.g.
+// Converts seconds to string in "##d ##h ##m ##s " format
+// Unneeded larger units are omitted, and zero padding is suppressed for first number e.g.
 //
-// etaDurString(0)      == "             0s"
-// etaDurString(1)      == "             1s"
-// etaDurString(61)     == "         1m 01s"
-// etaDurString(3661)   == "     1h 01m 01s"
-// etaDurString(90061)  == " 1d 01h 01m 01s"
+// etaDurString(0)      == "0s"
+// etaDurString(1)      == "1s"
+// etaDurString(61)     == "1m 01s"
+// etaDurString(3661)   == "1h 01m 01s"
+// etaDurString(90061)  == "1d 01h 01m 01s"
 // etaDurString(954061) == "11d 01h 01m 01s"
+//
+// seconds must be >= 0, else 'n/a' is returned
 
-const etaDurString = seconds => {
-  if (seconds < 0) {
-    return 'n/a'
-  }
-  const unixTimestamp = moment.unix(seconds).utc()
-  let dataStarted = false
-  let pieces = []
+const etaDurString = seconds =>
+  seconds < 0 ?
+    'n/a' :
+    R.pipe(
+      R.splitWhen(R.compose(R.not, R.equals('00'))),  // split list in 2 - [leading '00' entries] and [first non-'00' entry plus rest]
+      R.last, // discard leading '00' entries
+      R.ifElse(R.isEmpty, R.always(['00']), R.identity), // if nothing is left, use a single entry ['00'] so we end up with '0s'
+      R.reverse, // reverse to put seconds first, minutes next, etc. because zipWith() operates from beginning of array to end
+      R.zipWith((suffix, value) => `${value}${suffix}`, ['s', 'm', 'h', 'd']), // pair each remaining entry with appropriate suffix
+      R.reverse, // put back in normal order
+      R.join(' '),
+      R.ifElse(R.startsWith('0'), R.tail, R.identity) // remove leading zero if found
+    )(Duration.fromMillis(seconds * 1000).toFormat('dd hh mm ss').split(' '))
 
-  const days = Math.trunc(seconds / 86400)
-  if (days > 0) dataStarted = true
-  pieces.push(dataStarted ? days.toString() + 'd' : '')
-
-  const hoursString = unixTimestamp.format(dataStarted ? 'HH\\h' : 'H\\h')
-  dataStarted = dataStarted || hoursString !== '0h'
-  pieces.push(dataStarted ? hoursString : '')
-
-  const minutesString = unixTimestamp.format(dataStarted ? 'mm\\m' : 'm\\m')
-  dataStarted = dataStarted || minutesString !== '0m'
-  pieces.push(dataStarted ? minutesString : '')
-
-  const secondsString = unixTimestamp.format(dataStarted ? 'ss\\s' : 's\\s')
-  pieces.push(secondsString)
-  return pieces.map(padStart(3)).join(' ').trim()
-}
+const _eta_hms = estSeconds => R.isNil(estSeconds) ? 'unknown (not enough progress yet)' : etaDurString(estSeconds)
 
 const estJobTotalSeconds = (duration_ms, progress_pct) => duration_ms / (10 * progress_pct) // === (duration_ms/1000) / (progress_pct/100)
-const safePct = statusEntry => R.path(['progress', 'percentage'], statusEntry)
+const safePct = R.path(['progress', 'percentage'])
 
 const estSecondsLeft = statusEntry => {
   const pct = safePct(statusEntry)
@@ -137,7 +129,7 @@ const estSecondsLeft = statusEntry => {
     )
     return result < 0 ? 0 : result
   }
-  return null // percent progress = 0
+  return undefined // percent progress = 0
 }
 
 const highestReduce = (statusMap, propName, reducer, startVal) => Object.entries(statusMap).map((pair) => pair[1][propName]).reduce(reducer, startVal)
@@ -166,8 +158,8 @@ const lroStatusEnhance = R.curry(
     // examine each entry, add fields
     for (const [lroKey, statusEntry] of Object.entries(result.LROs)) {
       if (statusEntry.run_state === STATE_RUNNING) {
-        const start = moment.utc(statusEntry.start).valueOf()
-        const now = moment.utc(currentTime).valueOf()
+        const start = DateTime.fromISO(statusEntry.start).toMillis()
+        const now = DateTime.fromJSDate(currentTime).toMillis()
         const actualElapsedSeconds = Math.round((now - start) / 1000)
         const reportedElapsed = Math.round(statusEntry.duration_ms / 1000)
         const secondsSinceLastUpdate = actualElapsedSeconds - reportedElapsed
@@ -182,9 +174,9 @@ const lroStatusEnhance = R.curry(
           setBadRunState(statusEntry, STATE_BAD_PCT)
         } else {
           const secondsLeft = estSecondsLeft(statusEntry)
-          if (kindOf(secondsLeft) !== 'null') {
+          statusEntry.estimated_time_left_h_m_s = _eta_hms(secondsLeft)
+          if (!R.isNil(secondsLeft)) {
             statusEntry.estimated_time_left_seconds = secondsLeft
-            statusEntry.estimated_time_left_h_m_s = etaDurString(secondsLeft)
             statusEntry.eta_local = etaLocalString(secondsLeft)
           }
         }
@@ -210,11 +202,9 @@ const statusSummary = enhancedLROStatusEntries => {
   const summary = {run_state: highestRunState(enhancedLROStatusEntries)}
   if (summary.run_state === STATE_RUNNING) {
     const estSecondsLeft = highestSecondsLeft(enhancedLROStatusEntries)
-    if (kindOf(estSecondsLeft) === 'undefined') {
-      summary.estimated_time_left_h_m_s = 'unknown (not enough progress yet)'
-    } else {
+    summary.estimated_time_left_h_m_s = _eta_hms(estSecondsLeft)
+    if (!R.isNil(estSecondsLeft)) {
       summary.estimated_time_left_seconds = estSecondsLeft
-      summary.estimated_time_left_h_m_s = etaDurString(summary.estimated_time_left_seconds)
       summary.eta_local = etaLocalString(summary.estimated_time_left_seconds)
     }
   }

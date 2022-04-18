@@ -113,6 +113,7 @@ function would return:
         "progress": {
           "percentage": 0
         },
+        "estimated_time_left_h_m_s": "unknown (not enough progress yet)",
         "run_state": "running",
         "start": "2022-04-09T05:09:00Z",
         "seconds_since_last_update": 84
@@ -130,7 +131,7 @@ function would return:
     },
     "summary": {
       "run_state": "running",
-      "estimated_time_left_seconds": "unknown (not enough progress yet)"
+      "estimated_time_left_h_m_s": "unknown (not enough progress yet)"
     }
   }
 }
@@ -194,14 +195,14 @@ function would return:
         "start": "2022-04-08T21:05:00Z",
         "seconds_since_last_update": 359,
         "estimated_time_left_seconds": 423,
-        "estimated_time_left_h_m_s": "         7m 03s",
+        "estimated_time_left_h_m_s": "7m 03s",
         "eta_local": "2:41:13 PM PDT"
       }
     },
     "summary": {
       "run_state": "running",
       "estimated_time_left_seconds": 423,
-      "estimated_time_left_h_m_s": "         7m 03s",
+      "estimated_time_left_h_m_s": "7m 03s",
       "eta_local": "2:41:13 PM PDT"
     }
   }
