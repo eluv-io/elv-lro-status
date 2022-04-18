@@ -115,7 +115,7 @@ const etaDurString = seconds => {
 
   const secondsString = unixTimestamp.format(dataStarted ? 'ss\\s' : 's\\s')
   pieces.push(secondsString)
-  return pieces.map(padStart(3)).join(' ')
+  return pieces.map(padStart(3)).join(' ').trim()
 }
 
 const estJobTotalSeconds = (duration_ms, progress_pct) => duration_ms / (10 * progress_pct) // === (duration_ms/1000) / (progress_pct/100)
@@ -211,7 +211,7 @@ const statusSummary = enhancedLROStatusEntries => {
   if (summary.run_state === STATE_RUNNING) {
     const estSecondsLeft = highestSecondsLeft(enhancedLROStatusEntries)
     if (kindOf(estSecondsLeft) === 'undefined') {
-      summary.estimated_time_left_seconds = 'unknown (not enough progress yet)'
+      summary.estimated_time_left_h_m_s = 'unknown (not enough progress yet)'
     } else {
       summary.estimated_time_left_seconds = estSecondsLeft
       summary.estimated_time_left_h_m_s = etaDurString(summary.estimated_time_left_seconds)
