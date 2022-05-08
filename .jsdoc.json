@@ -1,0 +1,30 @@
+{
+  "tags": {
+    "allowUnknownTags": [
+      "category",
+      "curried",
+      "sig"
+    ],
+    "dictionaries": [
+      "jsdoc"
+    ]
+  },
+  "source": {
+    "include": [
+      "src"
+    ],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules/|docs)"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "destination": "./docs/",
+    "encoding": "utf8",
+    "pedantic": true,
+    "private": true,
+    "recurse": true,
+    "template": "./node_modules/@eluvio/elv-ramdoc"
+  }
+}

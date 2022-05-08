@@ -1,0 +1,237 @@
+<!DOCTYPE html><html class="docs-page" lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="shortcut icon" href="./images/favicon.png"><link href="./css/style.css" rel="stylesheet"><title></title></head><body><!-- ENTIRE BROWSER VIEW AREA--><div class="d-flex flex-column vh-100" id="viewport"><!-- PAGE HEADER--><div class="d-flex flex-row border navbar fixed-top align-items-stretch" id="header-row"><div class="d-flex flex-wrap align-items-center" id="logo-container"><a href="https://eluv.io" target="_blank"><img class="m-1" src="./images/logo.png"></a></div><div class="nav d-flex flex-wrap align-items-stretch" id="title-container"><ul class="nav"><li class="nav-link" id="project-name"><strong>@eluvio/elv-lro-status</strong><span class="ms-1" id="version">v2.0.0</span></li><li class="nav-link active-header-tab" id="nav-home-li"><a id="nav-home" href="#">Home</a></li><li class="nav-link" id="nav-api-li"><a id="nav-api" href="./api.html">API Documentation</a></li></ul></div><div class="flex-fill" id="header-space-fill"></div><div id="github-link-container"><ul class="nav"><li class="nav-link"><a href="https://github.com/eluv-io/elv-lro-status" target="_blank">Github</a></li></ul></div></div><!-- LOWER PANE--><div class="d-flex flex-col flex-fill justify-content-center" id="readme-container"><div id="readme"><h1>elv-lro-status</h1>
+<p>A library for enhancing the transcoding progress info returned by the <strong>elv-client-js</strong> <code>LROStatus()</code> API call, providing
+the following:</p>
+<ul>
+<li>Human-friendly 'time left' estimates and ETA expressed in local time</li>
+<li>Stalled LRO detection</li>
+<li>Warnings if an LRO produces too many or too few mezzanine parts</li>
+<li>A summary that rolls up all the LROs into a status for the mezzanine offering as a whole.</li>
+</ul>
+<p><strong>NOTE:</strong> ETA computation and stall detection depend on knowing the current time accurately. The current time is passed in as a parameter to the main function call EnhancedStatus(), allowing client to obtain current time from a source other than system clock if desired.</p>
+<h2>Installation</h2>
+<h4>Install from NPM:</h4>
+<pre class="prettyprint source"><code>npm install --save @eluvio/elv-lro-status
+</code></pre>
+<h2>Usage</h2>
+<h3>Node.js</h3>
+<p><strong>NOTE:</strong> The code examples assume you have a <code>const</code> named <code>client</code> that is a successfully prepared ElvClient
+instance. (See elv-client-js README sections <a href="https://github.com/eluv-io/elv-client-js#initialization">Initialization</a>
+and <a href="https://github.com/eluv-io/elv-client-js#authorization">Authorization</a>)</p>
+<p>It is important to only call <code>EnhancedStatus()</code> if your call to <code>ElvClient.LROStatus()</code> succeeded.</p>
+<p>Note that temporary network connectivity issues may cause your call to <code>ElvClient.LROStatus()</code> to fail and throw an
+exception - you should catch exceptions and retry periodically unless the exception indicates an irrecoverable error (
+e.g. 'object not found' or 'unauthorized').</p>
+<pre class="prettyprint source lang-js"><code>const LRO = require('@eluvio/elv-lro-status');
+
+const status = await client.LROStatus({
+  libraryId: 'ilib3JgZBNxZE8ZkM4jP8YUAdTnjukWV',
+  objectId: 'iq__4Ym91uVyPhayTRsew3ixQ8aGDJjy'
+});
+
+// check to make sure we received data back
+if (status === undefined) throw Error(&quot;Received no job status information from server - object already finalized?&quot;);
+
+const currentTime = new Date;
+const enhancedStatus = LRO.EnhancedStatus(status, currentTime);
+
+if (enhancedStatus.ok) {
+  console.log('Individual LRO statuses');
+  console.log(
+    JSON.stringify(
+      enhancedStatus.result.LROs,
+      null,
+      2
+    )
+  );
+  console.log('Overall status summary');
+  console.log(
+    JSON.stringify(
+      enhancedStatus.result.summary,
+      null,
+      2
+    )
+  );
+} else {
+  console.error(&quot;Bad job status data received from server:&quot;);
+  console.error(enhancedStatus.errors.join(&quot;\n&quot;));
+}
+</code></pre>
+<h2>Examples</h2>
+<h3>One LRO finished, one LRO started (but no progress reported yet)</h3>
+<p>Sample data from <code>ElvClient.LROStatus()</code>:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSv3L57AV3CPYHbLmk3E9SF1b&quot;: {
+    &quot;duration&quot;: 0,
+    &quot;duration_ms&quot;: 0,
+    &quot;progress&quot;: {
+      &quot;percentage&quot;: 0
+    },
+    &quot;run_state&quot;: &quot;running&quot;,
+    &quot;start&quot;: &quot;2022-04-09T05:09:00Z&quot;
+  },
+  &quot;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be&quot;: {
+    &quot;duration&quot;: 12747000000,
+    &quot;duration_ms&quot;: 12747,
+    &quot;end&quot;: &quot;2022-04-09T05:09:13Z&quot;,
+    &quot;progress&quot;: {
+      &quot;percentage&quot;: 100
+    },
+    &quot;run_state&quot;: &quot;finished&quot;,
+    &quot;start&quot;: &quot;2022-04-09T05:09:00Z&quot;
+  }
+}
+</code></pre>
+<p>If we obtained the above data at 10:10:24 PM PDT on April 8th, 2022 and immediately passed it to <code>EnhancedStatus()</code>, the
+function would return:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;ok&quot;: true,
+  &quot;result&quot;: {
+    &quot;LROs&quot;: {
+      &quot;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSv3L57AV3CPYHbLmk3E9SF1b&quot;: {
+        &quot;duration&quot;: 0,
+        &quot;duration_ms&quot;: 0,
+        &quot;progress&quot;: {
+          &quot;percentage&quot;: 0
+        },
+        &quot;estimated_time_left_h_m_s&quot;: &quot;unknown (not enough progress yet)&quot;,
+        &quot;run_state&quot;: &quot;running&quot;,
+        &quot;start&quot;: &quot;2022-04-09T05:09:00Z&quot;,
+        &quot;seconds_since_last_update&quot;: 84
+      },
+      &quot;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be&quot;: {
+        &quot;duration&quot;: 12747000000,
+        &quot;duration_ms&quot;: 12747,
+        &quot;end&quot;: &quot;2022-04-09T05:09:13Z&quot;,
+        &quot;progress&quot;: {
+          &quot;percentage&quot;: 100
+        },
+        &quot;run_state&quot;: &quot;finished&quot;,
+        &quot;start&quot;: &quot;2022-04-09T05:09:00Z&quot;
+      }
+    },
+    &quot;summary&quot;: {
+      &quot;run_state&quot;: &quot;running&quot;,
+      &quot;estimated_time_left_h_m_s&quot;: &quot;unknown (not enough progress yet)&quot;
+    }
+  }
+}
+</code></pre>
+<h3>One LRO finished, one LRO running</h3>
+<p>Sample data from <code>ElvClient.LROStatus()</code>:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU&quot;: {
+    &quot;duration&quot;: 335613000000,
+    &quot;duration_ms&quot;: 335613,
+    &quot;end&quot;: &quot;2022-04-08T21:10:34Z&quot;,
+    &quot;progress&quot;: {
+      &quot;percentage&quot;: 100
+    },
+    &quot;run_state&quot;: &quot;finished&quot;,
+    &quot;start&quot;: &quot;2022-04-08T21:05:00Z&quot;
+  },
+  &quot;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh&quot;: {
+    &quot;duration&quot;: 1390740000000,
+    &quot;duration_ms&quot;: 1390740,
+    &quot;progress&quot;: {
+      &quot;percentage&quot;: 76.66666666666667
+    },
+    &quot;run_state&quot;: &quot;running&quot;,
+    &quot;start&quot;: &quot;2022-04-08T21:05:00Z&quot;
+  }
+}
+</code></pre>
+<h4>Normal case (LRO not stalled)</h4>
+<p>If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to <code>EnhancedStatus()</code>, the
+function would return:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;ok&quot;: true,
+  &quot;result&quot;: {
+    &quot;LROs&quot;: {
+      &quot;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU&quot;: {
+        &quot;duration&quot;: 335613000000,
+        &quot;duration_ms&quot;: 335613,
+        &quot;end&quot;: &quot;2022-04-08T21:10:34Z&quot;,
+        &quot;progress&quot;: {
+          &quot;percentage&quot;: 100
+        },
+        &quot;run_state&quot;: &quot;finished&quot;,
+        &quot;start&quot;: &quot;2022-04-08T21:05:00Z&quot;
+      },
+      &quot;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh&quot;: {
+        &quot;duration&quot;: 1390740000000,
+        &quot;duration_ms&quot;: 1390740,
+        &quot;progress&quot;: {
+          &quot;percentage&quot;: 76.66666666666667
+        },
+        &quot;run_state&quot;: &quot;running&quot;,
+        &quot;start&quot;: &quot;2022-04-08T21:05:00Z&quot;,
+        &quot;seconds_since_last_update&quot;: 359,
+        &quot;estimated_time_left_seconds&quot;: 423,
+        &quot;estimated_time_left_h_m_s&quot;: &quot;7m 03s&quot;,
+        &quot;eta_local&quot;: &quot;2:41:13 PM PDT&quot;
+      }
+    },
+    &quot;summary&quot;: {
+      &quot;run_state&quot;: &quot;running&quot;,
+      &quot;estimated_time_left_seconds&quot;: 423,
+      &quot;estimated_time_left_h_m_s&quot;: &quot;7m 03s&quot;,
+      &quot;eta_local&quot;: &quot;2:41:13 PM PDT&quot;
+    }
+  }
+}
+</code></pre>
+<p>The <code>ok</code> property only indicates that input data was correctly structured and that no exceptions were thrown during data
+inspection and summarization - it <strong>DOES NOT</strong> indicate that the LROs are ok.</p>
+<h4>Stalled LRO</h4>
+<p>If we obtained the same data one hour later and passed it to <code>EnhancedStatus()</code>, the function would
+return:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;ok&quot;: true,
+  &quot;result&quot;: {
+    &quot;LROs&quot;: {
+      &quot;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU&quot;: {
+        &quot;duration&quot;: 335613000000,
+        &quot;duration_ms&quot;: 335613,
+        &quot;end&quot;: &quot;2022-04-08T21:10:34Z&quot;,
+        &quot;progress&quot;: {
+          &quot;percentage&quot;: 100
+        },
+        &quot;run_state&quot;: &quot;finished&quot;,
+        &quot;start&quot;: &quot;2022-04-08T21:05:00Z&quot;
+      },
+      &quot;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh&quot;: {
+        &quot;duration&quot;: 1390740000000,
+        &quot;duration_ms&quot;: 1390740,
+        &quot;progress&quot;: {
+          &quot;percentage&quot;: 76.66666666666667
+        },
+        &quot;run_state&quot;: &quot;stalled&quot;,
+        &quot;start&quot;: &quot;2022-04-08T21:05:00Z&quot;,
+        &quot;seconds_since_last_update&quot;: 3959,
+        &quot;warning&quot;: &quot;status has not been updated in 3959 seconds, process may have terminated&quot;,
+        &quot;reported_run_state&quot;: &quot;running&quot;
+      }
+    },
+    &quot;summary&quot;: {
+      &quot;run_state&quot;: &quot;stalled&quot;
+    }
+  }
+}
+</code></pre>
+<p>Note the presence of two additional fields <code>warning</code> and <code>reported_run_state</code> for the stalled LRO.</p>
+<p>Note also that the <code>ok</code> field is still <code>true</code> even though LRO has probably terminated abnormally.</p>
+<h3>Bad data</h3>
+<p>If the data obtained from <code>ElvClient.LROStatus()</code> is somehow invalid, then the object returned by <code>EnhancedStatus()</code>
+will have <code>ok</code> set to <code>false</code> and also have an <code>errors</code>
+property set to an array of error message strings.</p>
+<p>For example, if somehow the <code>LROStatus()</code> call returned <code>-1000</code> for one of the LRO's <code>duration_ms</code> field,
+then <code>EnhancedStatus()</code> would return:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;ok&quot;: false,
+  &quot;errors&quot;: [
+    &quot;LROStatusEntry: duration_ms must be >= 0 (got: -1000)&quot;
+  ]
+}
+</code></pre>
+<p>Usually, an <code>ok</code> value of <code>false</code> indicates that <code>ElvClient.LROStatus()</code> returned data in an unexpected format or with
+unexpected values. Passing in something other than a Javascript Date object for the current time would also cause <code>ok</code> to be <code>false</code>.</p></div></div></div></body></html>

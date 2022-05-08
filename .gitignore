@@ -1,4 +1,4 @@
-# ignore IDE project metadaa
+# ignore IDE project metadata
 .idea/
 
 # ignore Mac OS X folder metadata
@@ -9,6 +9,13 @@
 
 # exclude installed NPM packages
 node_modules/
+
+# exclude build/publish directory
+build/
+
+# test coverage output
+coverage
+.nyc_output
 
 # npm recommends including package-lock.json in repo, but it generally causes more problems that it solves
 package-lock.json
