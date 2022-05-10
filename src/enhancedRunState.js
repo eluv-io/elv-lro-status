@@ -8,8 +8,12 @@ const RS = require('./lroRunState')
  * @default
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_BAD_PCT} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'bad percentage'
+ *
  */
-const STATE_BAD_PCT = 'bad_percentage'
+const STATE_BAD_PCT = 'bad percentage'
 
 /**
  * An enhanced `run_state` (also used by Eluvio Content Fabric servers) to indicate that an LRO has been cancelled due
@@ -21,6 +25,10 @@ const STATE_BAD_PCT = 'bad_percentage'
  * @default cancelled by node shutdown
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_CANCELLED_SHUTDOWN} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'cancelled by node shutdown'
+ *
  */
 const STATE_CANCELLED_SHUTDOWN = RS.LRO_RS_CANCELLED_SHUTDOWN
 
@@ -35,6 +43,10 @@ const STATE_CANCELLED_SHUTDOWN = RS.LRO_RS_CANCELLED_SHUTDOWN
  * @default cancelled by timeout
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_CANCELLED_TIMEOUT} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'cancelled by timeout'
+ *
  */
 const STATE_CANCELLED_TIMEOUT = RS.LRO_RS_CANCELLED_TIMEOUT
 
@@ -48,6 +60,10 @@ const STATE_CANCELLED_TIMEOUT = RS.LRO_RS_CANCELLED_TIMEOUT
  * @default cancelled by user
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_CANCELLED_USER} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'cancelled by user'
+ *
  */
 const STATE_CANCELLED_USER = RS.LRO_RS_CANCELLED_USER
 
@@ -59,6 +75,10 @@ const STATE_CANCELLED_USER = RS.LRO_RS_CANCELLED_USER
  * @default failed
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_FAILED} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'failed'
+ *
  */
 const STATE_FAILED = RS.LRO_RS_FAILED
 
@@ -72,6 +92,10 @@ const STATE_FAILED = RS.LRO_RS_FAILED
  * @default finished
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_FINISHED} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'finished'
+ *
  */
 const STATE_FINISHED = RS.LRO_RS_FINISHED
 
@@ -85,6 +109,10 @@ const STATE_FINISHED = RS.LRO_RS_FINISHED
  * @default not started
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_NOT_STARTED} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'not started'
+ *
  */
 const STATE_NOT_STARTED = RS.LRO_RS_NOT_STARTED
 
@@ -96,6 +124,10 @@ const STATE_NOT_STARTED = RS.LRO_RS_NOT_STARTED
  * @default running
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_RUNNING} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'running'
+ *
  */
 const STATE_RUNNING = RS.LRO_RS_RUNNING
 
@@ -107,6 +139,10 @@ const STATE_RUNNING = RS.LRO_RS_RUNNING
  * @default
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_STALLED} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'stalled'
+ *
  */
 const STATE_STALLED = 'stalled'
 
@@ -117,6 +153,10 @@ const STATE_STALLED = 'stalled'
  * @default
  * @type {String}
  * @category Constant
+ * @example
+ *
+ * const {STATE_UNKNOWN} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> 'unknown'
+ *
  */
 const STATE_UNKNOWN = 'unknown'
 
@@ -141,6 +181,10 @@ const STATE_UNKNOWN = 'unknown'
  * @constant
  * @type {String[]}
  * @category Constant
+ * @example
+ *
+ * const {STATES} = require('@eluvio/elv-lro-status/enhancedRunState')  //=> ['unknown', ..., 'cancelled by user']
+ *
  */
 const STATES = [
   STATE_UNKNOWN,

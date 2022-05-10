@@ -15,8 +15,9 @@ const LROProgressModel = require('./LROProgressModel')
  * @sig * -> Object | THROW
  * @param {*} - The input to validate
  * @returns {Object} The validated input, proxied by ObjectModel
- *
  * @example
+ *
+ * const LROStatusEntryModel = require('@eluvio/elv-lro-status/LROStatusEntryModel')
  *
  * LROStatusEntryModel({})          //=> EXCEPTION: 'expecting duration to be Number, got undefined...'
  *

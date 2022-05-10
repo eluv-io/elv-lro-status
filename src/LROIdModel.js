@@ -18,12 +18,13 @@ const _LRO_ID_REGEX = /^tlro[1-9A-HJ-NP-Za-km-z]+$/
  * @sig * -> String | THROW
  * @param {*} - The input to validate
  * @returns {String} The validated input, proxied by ObjectModel
- *
  * @example
+ *
+ * const LROIdModel = require('@eluvio/elv-lro-status/LROIdModel')
  *
  * LROIdModel('tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh')  //=> 'tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh' (proxied by ObjectModel)
  *
- * LROIdModel(4.2)                                                           //=> EXCEPTION: 'expecting String, got Number 4.2'
+ * LROIdModel(42)                                                            //=> EXCEPTION: 'expecting String, got Number 42'
  *
  * LROIdModel('foo')                                                         //=> EXCEPTION: 'Value is not a valid LRO ID string 'tlro...'  (got: foo)'
  *

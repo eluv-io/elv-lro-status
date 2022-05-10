@@ -4,6 +4,10 @@
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_NOT_STARTED} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'not started'
+ *
  */
 const LRO_RS_NOT_STARTED = 'not started'
 
@@ -13,6 +17,10 @@ const LRO_RS_NOT_STARTED = 'not started'
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_RUNNING} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'running'
+ *
  */
 const LRO_RS_RUNNING = 'running'
 
@@ -22,6 +30,10 @@ const LRO_RS_RUNNING = 'running'
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_FINISHED} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'finished'
+ *
  */
 const LRO_RS_FINISHED = 'finished'
 
@@ -31,6 +43,10 @@ const LRO_RS_FINISHED = 'finished'
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_FAILED} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'failed'
+ *
  */
 const LRO_RS_FAILED = 'failed'
 
@@ -40,6 +56,10 @@ const LRO_RS_FAILED = 'failed'
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_CANCELLED_TIMEOUT} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'cancelled by timeout'
+ *
  */
 const LRO_RS_CANCELLED_TIMEOUT = 'cancelled by timeout'
 
@@ -49,6 +69,10 @@ const LRO_RS_CANCELLED_TIMEOUT = 'cancelled by timeout'
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_CANCELLED_USER} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'cancelled by user'
+ *
  */
 const LRO_RS_CANCELLED_USER = 'cancelled by user'
 
@@ -58,6 +82,10 @@ const LRO_RS_CANCELLED_USER = 'cancelled by user'
  * @type {String}
  * @default
  * @category Constant
+ * @example
+ *
+ * const {LRO_RS_CANCELLED_SHUTDOWN} = require('@eluvio/elv-lro-status/lroRunState')  //=> 'cancelled by node shutdown'
+ *
  */
 const LRO_RS_CANCELLED_SHUTDOWN = 'cancelled by node shutdown'
 
@@ -67,6 +95,9 @@ const LRO_RS_CANCELLED_SHUTDOWN = 'cancelled by node shutdown'
  * @constant
  * @type {String[]}
  * @category Constant
+ * @example
+ *
+ * const {LRO_RUN_STATES} = require('@eluvio/elv-lro-status/lroRunState')  //=> ['not started', ..., 'cancelled by node shutdown']
  *
  */
 const LRO_RUN_STATES = [

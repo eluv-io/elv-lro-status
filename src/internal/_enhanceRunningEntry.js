@@ -17,7 +17,7 @@ const ERS = require('../enhancedRunState')
  * @function
  * @private
  * @category Conversion
- * @sig Object -> String -> Object -> Object
+ * @sig Object -> Pair String Object -> Pair String Object
  * @param {Object} options
  * @param {Date} options.currentTime - The value to use for current time when calculating ETA fields
  * @param {String} options.locale - The locale to use when formatting the `eta_local` field
@@ -25,14 +25,67 @@ const ERS = require('../enhancedRunState')
  * @param {String} options.timezone - The timezone to use when formatting the `eta_local` field
  * @param {Pair} lro - A Crocks Pair with LRO ID as first element and LRO Status Entry as second element
  * @returns {Pair}  A Crocks Pair with LRO ID as first element and the enhanced copy of LRO Status Entry object with additional fields as second element
- *
  * @example
  *
- * _enhanceRunningEntry({},'',{})
+ * const Pair = require('@eluvio/elv-js-helpers/Pair')
  *
+ * const defaultOptions = require('@eluvio/elv-lro-status/defaultOptions')
+ * const _enhanceRunningEntry = require('@eluvio/elv-lro-status/internal/_enhanceRunningEntry')
+ *
+ * // for this example, current time is 2022-04-08T21:34:10Z
+ * const options = Object.assign(defaultOptions(), {currentTime: new Date})
+ *
+ * const lro = Pair(
+ *   'tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh',
+ *   {
+ *     "duration": 1390740000000,
+ *     "duration_ms": 1390740,
+ *     "progress": {
+ *       "percentage": 76.66666666666667
+ *     },
+ *     "run_state": "running",
+ *     "start": "2022-04-08T21:05:00Z"
+ *   }
+ * )
+ *
+ * const enhanced = _enhanceRunningEntry(lro)
+ *
+ * console.log(Pair.fst())
+ * 'tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh'
+ *
+ * console.log(JSON.stringify(Pair.snd(), null, 2)
+ * `{
+ *   "duration": 1390740000000,
+ *   "duration_ms": 1390740,
+ *   "progress": {
+ *     "percentage": 76.66666666666667
+ *   },
+ *   "run_state": "running",
+ *   "start": "2022-04-08T21:05:00Z",
+ *   "seconds_since_last_update": 359,
+ *   "estimated_time_left_seconds": 533,
+ *   "estimated_time_left_h_m_s": "8m 53s",
+ *   "eta_local": "2:43:03 PM PDT"
+ * }`
+ *
+ * // if current time were instead 1 hour later (2022-04-08T22:34:10Z) then output would be:
+ * `{
+ *   "duration": 1390740000000,
+ *   "duration_ms": 1390740,
+ *   "progress": {
+ *     "percentage": 76.66666666666667
+ *   },
+ *   "run_state": "stalled",
+ *   "start": "2022-04-08T21:05:00Z",
+ *   "seconds_since_last_update": 3959,
+ *   "estimated_time_left_seconds": 1628,
+ *   "estimated_time_left_h_m_s": "27m 08s",
+ *   "eta_local": "4:01:18 PM PDT",
+ *   "reported_run_state": "running",
+ *   "warning": "status has not been updated in 3959 seconds, process may have terminated"
+ * }`
  *
  */
-// TODO: add example above
 const _enhanceRunningEntry = (options, lro) => {
   // compute derived values
   const lroKey = lro.fst()

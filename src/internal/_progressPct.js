@@ -9,8 +9,9 @@ const path = require('ramda/src/path')
  * @sig Object -> Number | undefined
  * @param {Object} - An LRO Status Entry object
  * @returns {(Number | undefined)} The value or `undefined` if not found
- *
  * @example
+ *
+ * const _progressPct = require('@eluvio/elv-lro-status/internal/_progressPct')
  *
  * _progressPct({progress: {pct: 10}}) //=> 10
  *

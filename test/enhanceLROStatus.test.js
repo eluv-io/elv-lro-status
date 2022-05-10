@@ -15,12 +15,12 @@ const defaultOptions = require('../src/defaultOptions')
 const enhanceLROStatus = require('../src/enhanceLROStatus')
 const ERS = require('../src/enhancedRunState')
 
-const dump = x => console.log(JSON.stringify(x,null,2))
+const dump = x => console.log(JSON.stringify(x, null, 2))
 
 // compute minimum possible 'current time' given LRO status return data
 const testCaseMinCurrentTime = lroStatus => {
   // filter out non-running items
-  const runningItems = R.values(R.filter(s => s.run_state === ERS.STATE_RUNNING, lroStatus))
+  const runningItems = R.filter(s => s.run_state === ERS.STATE_RUNNING, R.values(lroStatus))
   // find the one updated most recently
   const withStartMs = runningItems.map(s => R.assoc('start_ms', utcStrToDate(s.start).valueOf(), s))
   const withLastUpdatedMs = withStartMs.map(s => R.assoc('last_updated_ms', s.start_ms + s.duration_ms, s))
@@ -95,7 +95,6 @@ describe('enhanceLROStatus', function () {
   const retValStalled = enhanceLROStatus(
     optionsPlusTime(stallTime),
     LRO_1_FINISHED_1_RUNNING
-
   )
   const retValBadData = enhanceLROStatus(
     optionsPlusTime(new Date),

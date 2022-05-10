@@ -23,12 +23,13 @@ const _STATE_PRECEDENCE = fromPairs(mapWithIndex((e, i) => [e, i], STATES))
  * @sig [String] -> String
  * @param {String[]} list - An array of enhanced run states
  * @returns {String} The state with the highest precedence, or value or `STATE_UNKNOWN` if `list` is empty.
- *
  * @example
  *
- * maxState(['running', 'stalled']) //=> 'stalled'
+ * const _maxEnhancedState = require('@eluvio/elv-lro-status/internal/_maxEnhancedState')
  *
- * maxState([])                     //=> 'unknown'
+ * _maxEnhancedState(['running', 'stalled']) //=> 'stalled'
+ *
+ * _maxEnhancedState([])                     //=> 'unknown'
  *
  */
 const _maxEnhancedState = list => last(sortBy(state => _STATE_PRECEDENCE[state], list)) || STATE_UNKNOWN

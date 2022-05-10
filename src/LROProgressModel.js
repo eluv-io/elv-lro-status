@@ -11,8 +11,9 @@ const NonNegativeNumModel = require('@eluvio/elv-js-helpers/NonNegativeNumModel'
  * @sig * -> Object | THROW
  * @param {*} - The input to validate
  * @returns {Object} The validated input, proxied by ObjectModel
- *
  * @example
+ *
+ * const LROProgressModel = require('@eluvio/elv-lro-status/LROProgressModel')
  *
  * LROProgressModel({})                         //=> EXCEPTION: 'expecting percentage to be Number, got undefined'
  *

@@ -15,8 +15,9 @@ const LROStatusEntryModel = require('./LROStatusEntryModel')
  * @sig * -> Object | THROW
  * @param {*} - The input to validate
  * @returns {Object} The validated input, proxied by ObjectModel
- *
  * @example
+ *
+ * const LROStatusModel = require('@eluvio/elv-lro-status/LROStatusModel')
  *
  * LROStatusModel({})   //=> {} // proxied by ObjectModel
  *

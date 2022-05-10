@@ -21,11 +21,14 @@ const {STATE_RUNNING} = require('../enhancedRunState')
  * @sig Object -> Object
  * @param {Object} enhancedLROStatus - An object where the keys are LRO IDs and the values are enhanced LRO Status Entries
  * @returns {Object} The summary object
- *
  * @example
  *
- * _sumEnhancedEntries({})
+ *  const _sumEnhancedEntries = require('@eluvio/elv-lro-status/internal/_sumEnhancedEntries')
  *
+ * _sumEnhancedEntries({
+ *   key1: {},
+ *   key2: {}
+ * })
  *
  */
 // TODO: add example above
