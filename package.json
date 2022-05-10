@@ -22,7 +22,6 @@
     "update-dependencies": "echo 'Updating dependencies in package.json and installing any new version(s)...' && npx npm-check-updates -u && npm install",
     "version": "echo 'Executing npm publish hook: version... (rebuilds docs with new version number and rebuilds ./build/dist)' && npm run generate-docs && npm run build && git add docs || git commit -m 'Update docs' || true"
   },
-  "sideEffects": false,
   "keywords": [
     "Eluvio",
     "ABR",
@@ -50,7 +49,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@eluvio/elv-js-helpers": "^3.1.0",
+    "@eluvio/elv-js-helpers": "^3.1.2",
     "kind-of": "^6.0.3",
     "ramda": "^0.28.0"
   }

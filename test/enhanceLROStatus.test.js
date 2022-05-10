@@ -67,8 +67,8 @@ const LRO_NO_PROGRESS_YET = {
 
 const LRO_BAD_DATA = {
   tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU: {
-    duration: -335613000000,
-    duration_ms: -335613,
+    duration: 0,
+    duration_ms: -1000,
     end: '2022-04-08T21:10:34Z',
     progress: {
       percentage: 100
@@ -97,7 +97,7 @@ describe('enhanceLROStatus', function () {
     LRO_1_FINISHED_1_RUNNING
 
   )
-  const retValBadDta = enhanceLROStatus(
+  const retValBadData = enhanceLROStatus(
     optionsPlusTime(new Date),
     LRO_BAD_DATA
   )
@@ -143,6 +143,6 @@ describe('enhanceLROStatus', function () {
   })
 
   it('should return ok false for bad data', () => {
-    retValBadDta.ok.should.be.false
+    retValBadData.ok.should.be.false
   })
 })

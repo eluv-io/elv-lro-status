@@ -22,6 +22,8 @@ npm install --save @eluvio/elv-lro-status
 
 ### Node.js
 
+// TODO : update with docs on requiring pieces
+
 **NOTE:** The code examples assume you have a `const` named `client` that is a successfully prepared ElvClient
 instance. (See elv-client-js README sections [Initialization](https://github.com/eluv-io/elv-client-js#initialization)
 and [Authorization](https://github.com/eluv-io/elv-client-js#authorization))
@@ -33,7 +35,8 @@ exception - you should catch exceptions and retry periodically unless the except
 e.g. 'object not found' or 'unauthorized').
 
 ```js
-const LRO = require('@eluvio/elv-lro-status');
+const defaultOptions = require('@eluvio/elv-lro-status/defaultOptions')
+const enhanceLROStatus = require('@eluvio/elv-lro-status/enhanceLROStatus');
 
 const status = await client.LROStatus({
   libraryId: 'ilib3JgZBNxZE8ZkM4jP8YUAdTnjukWV',
@@ -43,8 +46,8 @@ const status = await client.LROStatus({
 // check to make sure we received data back
 if (status === undefined) throw Error("Received no job status information from server - object already finalized?");
 
-const currentTime = new Date;
-const enhancedStatus = LRO.EnhancedStatus(status, currentTime);
+const options = Object.assign(defaultOptions(), {currentTime: new Date})
+const enhancedStatus = enhanceLROStatus(options, status);
 
 if (enhancedStatus.ok) {
   console.log('Individual LRO statuses');
@@ -64,7 +67,7 @@ if (enhancedStatus.ok) {
     )
   );
 } else {
-  console.error("Bad job status data received from server:");
+  console.error("Error during processing:");
   console.error(enhancedStatus.errors.join("\n"));
 }
 ```
@@ -99,8 +102,8 @@ Sample data from `ElvClient.LROStatus()`:
 }
 ```
 
-If we obtained the above data at 10:10:24 PM PDT on April 8th, 2022 and immediately passed it to `EnhancedStatus()`, the
-function would return:
+If we obtained the above data at 10:10:24 PM PDT on April 8th, 2022 and immediately passed it to `enhanceLROStatus()`, 
+the function would return:
 
 ```json
 {
@@ -167,7 +170,7 @@ Sample data from `ElvClient.LROStatus()`:
 
 #### Normal case (LRO not stalled)
 
-If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to `EnhancedStatus()`, the
+If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to `enhanceLROStatus()`, the
 function would return:
 
 ```json
@@ -214,7 +217,7 @@ inspection and summarization - it **DOES NOT** indicate that the LROs are ok.
 
 #### Stalled LRO
 
-If we obtained the same data one hour later and passed it to `EnhancedStatus()`, the function would
+If we obtained the same data one hour later and passed it to `enhanceLROStatus()`, the function would
 return:
 
 ```json
@@ -258,21 +261,41 @@ Note also that the `ok` field is still `true` even though LRO has probably termi
 
 ### Bad data
 
-If the data obtained from `ElvClient.LROStatus()` is somehow invalid, then the object returned by `EnhancedStatus()`
-will have `ok` set to `false` and also have an `errors`
-property set to an array of error message strings.
+If the data obtained from `ElvClient.LROStatus()` is somehow invalid, then the object returned by `enhanceLROStatus()`
+will have `ok` set to `false` and also have an `errors` property set to an array of error message strings, as well as an
+`errorDetails` property with more detailed error information (if available - if no further information is
+available, it will contain the same strings as `errors`).
 
 For example, if somehow the `LROStatus()` call returned `-1000` for one of the LRO's `duration_ms` field,
-then `EnhancedStatus()` would return:
+then `enhanceLROStatus()` would return:
 
 ```json
 {
   "ok": false,
   "errors": [
-    "LROStatusEntry: duration_ms must be >= 0 (got: -1000)"
+    "LROStatus: key 'tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU' points to a value that is an invalid LROStatusEntry (LROStatusEntry: duration_ms must be >= 0 (got: -1000))"
+  ],
+  "errorDetails": [
+    {
+      "received": {
+        "tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU": {
+          "duration": 0,
+          "duration_ms": -1000,
+          "end": "2022-04-08T21:10:34Z",
+          "progress": {
+            "percentage": 100
+          },
+          "run_state": "finished",
+          "start": "2022-04-08T21:05:00Z"
+        }
+      },
+      "path": null,
+      "message": "key 'tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU' points to a value that is an invalid LROStatusEntry (LROStatusEntry: duration_ms must be >= 0 (got: -1000))"
+    }
   ]
 }
 ```
 
-Usually, an `ok` value of `false` indicates that `ElvClient.LROStatus()` returned data in an unexpected format or with
-unexpected values. Passing in something other than a Javascript Date object for the current time would also cause `ok` to be `false`.
+Usually, an `ok` value of `false` indicates that invalid `options` were passed into the function (e.g. setting
+`currentTime` to something other than a Javascript Date object), but it is also possible that `ElvClient.LROStatus()` 
+returned data in an unexpected format or with unexpected values.
