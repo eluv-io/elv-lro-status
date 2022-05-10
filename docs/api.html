@@ -26,7 +26,7 @@ Checks for bad reported progress percentage.</p></div><pre><code class="hljs jav
 <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Pair</span>.<span class="hljs-title function_">fst</span>())
 <span class="hljs-string">&#x27;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be&#x27;</span>
 
-<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(<span class="hljs-title class_">Pair</span>.<span class="hljs-title function_">snd</span>(), <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(enhanced.<span class="hljs-title function_">snd</span>(), <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)
 <span class="hljs-string">`{
   &quot;duration&quot;: 12747000000,
   &quot;duration_ms&quot;: 12747,
@@ -42,7 +42,7 @@ Checks for bad reported progress percentage.</p></div><pre><code class="hljs jav
 lro.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x.<span class="hljs-property">progress</span>.<span class="hljs-property">percentage</span> = <span class="hljs-number">120</span>)
 
 <span class="hljs-keyword">const</span> enhancedBadData = <span class="hljs-title function_">_enhanceNonRunningEntry</span>(lro)
-<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(enhancedBadData, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>))
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(enhancedBadData.<span class="hljs-title function_">snd</span>(), <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>))
 <span class="hljs-string">`{
   &quot;duration&quot;: 12747000000,
   &quot;duration_ms&quot;: 12747,
@@ -50,7 +50,7 @@ lro.<span class="hljs-title function_">map</span>(<span class="hljs-function"><s
   &quot;progress&quot;: {
     &quot;percentage&quot;: 120
   },
-  &quot;run_state&quot;: &quot;bad_percentage&quot;,
+  &quot;run_state&quot;: &quot;bad percentage&quot;,
   &quot;start&quot;: &quot;2022-04-09T05:09:00Z&quot;,
   &quot;reported_run_state&quot;: &quot;finished&quot;,
   &quot;warning&quot;: &quot;Job tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be has run_state &#x27;finished&#x27;, but progress pct is 120&quot;
@@ -77,7 +77,7 @@ Adds ETA fields if possible</p></div><pre><code class="hljs javascript"><span cl
   }
 )
 
-<span class="hljs-keyword">const</span> enhanced = <span class="hljs-title function_">_enhanceRunningEntry</span>(lro)
+<span class="hljs-keyword">const</span> enhanced = <span class="hljs-title function_">_enhanceRunningEntry</span>(options, lro)
 
 <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Pair</span>.<span class="hljs-title function_">fst</span>())
 <span class="hljs-string">&#x27;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh&#x27;</span>
@@ -120,13 +120,74 @@ Adds ETA fields if possible</p></div><pre><code class="hljs javascript"><span cl
 
 <span class="hljs-title function_">_progressPct</span>({<span class="hljs-attr">progress</span>: {<span class="hljs-attr">pct</span>: <span class="hljs-number">10</span>}}) <span class="hljs-comment">//=&gt; 10</span>
 
-<span class="hljs-title function_">_progressPct</span>({})                    <span class="hljs-comment">//=&gt; undefined</span></code></pre></div><div class="section-id" id="_STATE_PRECEDENCE"></div><div class="card" data-name="_STATE_PRECEDENCE" data-access="private" data-category="Constant" display="none"><h2><a class="name" tabindex="3" href="#_STATE_PRECEDENCE">_STATE_PRECEDENCE</a><a class="source-code-link" target="_blank" title="View source on GitHub" href="https://github.com/eluv-io/elv-lro-status/blob/v2.0.1/src/internal/_maxEnhancedState.js#L15"><img src="./images/box-arrow-up-right.svg"></a><span class="label-category-big" data-category="Constant">Constant</span></h2><p class="fs-5"><em>Type:</em><strong class="ms-1">Object</strong></p><div class="description mt-1"><p>A lookup table for enhanced run state precedence {unknown: 0, finished: 1, ...}</p></div></div><div class="section-id" id="_sumEnhancedEntries"></div><div class="card" data-name="_sumEnhancedEntries" data-access="private" data-category="Conversion" display="none"><h2><a class="name" tabindex="3" href="#_sumEnhancedEntries">_sumEnhancedEntries</a><a class="source-code-link" target="_blank" title="View source on GitHub" href="https://github.com/eluv-io/elv-lro-status/blob/v2.0.1/src/internal/_sumEnhancedEntries.js#L35"><img src="./images/box-arrow-up-right.svg"></a><span class="label-category-big" data-category="Conversion">Conversion</span></h2><div class="sig-container"><code class="sig">Object → Object</code></div><div class="params" data-expanded="false"><a class="toggle-params" href="#expand">Parameters</a><div class="details panel panel-default"><ul class="list-group"><li class="list-group-item"><strong>Object</strong><code class="ms-2 param-name">enhancedLROStatus</code><span class="ms-1 description"><p>An object where the keys are LRO IDs and the values are enhanced LRO Status Entries</p></span></li><li class="list-group-item"><em>Returns:</em><strong class="ms-1">Object</strong><span class="ms-1 description"><p>The summary object</p></span></li></ul></div></div><div class="description mt-1"><p>Returns a summary for an object containing enhanced LRO Status Entries</p>
+<span class="hljs-title function_">_progressPct</span>({})                    <span class="hljs-comment">//=&gt; undefined</span></code></pre></div><div class="section-id" id="_STATE_PRECEDENCE"></div><div class="card" data-name="_STATE_PRECEDENCE" data-access="private" data-category="Constant" display="none"><h2><a class="name" tabindex="3" href="#_STATE_PRECEDENCE">_STATE_PRECEDENCE</a><a class="source-code-link" target="_blank" title="View source on GitHub" href="https://github.com/eluv-io/elv-lro-status/blob/v2.0.1/src/internal/_maxEnhancedState.js#L15"><img src="./images/box-arrow-up-right.svg"></a><span class="label-category-big" data-category="Constant">Constant</span></h2><p class="fs-5"><em>Type:</em><strong class="ms-1">Object</strong></p><div class="description mt-1"><p>A lookup table for enhanced run state precedence {unknown: 0, finished: 1, ...}</p></div></div><div class="section-id" id="_sumEnhancedEntries"></div><div class="card" data-name="_sumEnhancedEntries" data-access="private" data-category="Conversion" display="none"><h2><a class="name" tabindex="3" href="#_sumEnhancedEntries">_sumEnhancedEntries</a><a class="source-code-link" target="_blank" title="View source on GitHub" href="https://github.com/eluv-io/elv-lro-status/blob/v2.0.1/src/internal/_sumEnhancedEntries.js#L96"><img src="./images/box-arrow-up-right.svg"></a><span class="label-category-big" data-category="Conversion">Conversion</span></h2><div class="sig-container"><code class="sig">Object → Object</code></div><div class="params" data-expanded="false"><a class="toggle-params" href="#expand">Parameters</a><div class="details panel panel-default"><ul class="list-group"><li class="list-group-item"><strong>Object</strong><code class="ms-2 param-name">enhancedLROStatus</code><span class="ms-1 description"><p>An object where the keys are LRO IDs and the values are enhanced LRO Status Entries</p></span></li><li class="list-group-item"><em>Returns:</em><strong class="ms-1">Object</strong><span class="ms-1 description"><p>The summary object</p></span></li></ul></div></div><div class="description mt-1"><p>Returns a summary for an object containing enhanced LRO Status Entries</p>
 <p>Returns an overall <code>run_state</code> and (if applicable) ETA fields.</p></div><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> _sumEnhancedEntries = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@eluvio/elv-lro-status/internal/_sumEnhancedEntries&#x27;</span>)
 
-<span class="hljs-title function_">_sumEnhancedEntries</span>({
-  <span class="hljs-attr">key1</span>: {},
-  <span class="hljs-attr">key2</span>: {}
-})</code></pre></div><div class="section-id" id="defaultOptions"></div><div class="card" data-name="defaultOptions" data-access="public" data-category="Miscellaneous" display=""><h2><a class="name" tabindex="3" href="#defaultOptions">defaultOptions</a><a class="source-code-link" target="_blank" title="View source on GitHub" href="https://github.com/eluv-io/elv-lro-status/blob/v2.0.1/src/defaultOptions.js#L28"><img src="./images/box-arrow-up-right.svg"></a><span class="label-category-big" data-category="Miscellaneous">Miscellaneous</span></h2><div class="sig-container"><code class="sig">() → Object</code></div><div class="params" data-expanded="false"><a class="toggle-params" href="#expand">Parameters</a><div class="details panel panel-default"><ul class="list-group"><li class="list-group-item"><em>Returns:</em><strong class="ms-1">Object</strong><span class="ms-1 description"><p>Partially populated options  object</p></span></li></ul></div></div><div class="description mt-1"><p>Returns an object containing default options for <code>enhanceLROStatus</code> and <code>enhanceLROStatusEntry</code>.</p>
+<span class="hljs-keyword">const</span> enhancedEntriesNoProgress = {
+  <span class="hljs-string">&quot;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSv3L57AV3CPYHbLmk3E9SF1b&quot;</span>: {
+    <span class="hljs-string">&quot;duration&quot;</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">&quot;duration_ms&quot;</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">&quot;progress&quot;</span>: {
+      <span class="hljs-string">&quot;percentage&quot;</span>: <span class="hljs-number">0</span>
+    },
+    <span class="hljs-string">&quot;estimated_time_left_h_m_s&quot;</span>: <span class="hljs-string">&quot;unknown (not enough progress yet)&quot;</span>,
+    <span class="hljs-string">&quot;run_state&quot;</span>: <span class="hljs-string">&quot;running&quot;</span>,
+    <span class="hljs-string">&quot;start&quot;</span>: <span class="hljs-string">&quot;2022-04-09T05:09:00Z&quot;</span>,
+    <span class="hljs-string">&quot;seconds_since_last_update&quot;</span>: <span class="hljs-number">84</span>
+  },
+  <span class="hljs-string">&quot;tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be&quot;</span>: {
+    <span class="hljs-string">&quot;duration&quot;</span>: <span class="hljs-number">12747000000</span>,
+    <span class="hljs-string">&quot;duration_ms&quot;</span>: <span class="hljs-number">12747</span>,
+    <span class="hljs-string">&quot;end&quot;</span>: <span class="hljs-string">&quot;2022-04-09T05:09:13Z&quot;</span>,
+    <span class="hljs-string">&quot;progress&quot;</span>: {
+      <span class="hljs-string">&quot;percentage&quot;</span>: <span class="hljs-number">100</span>
+    },
+    <span class="hljs-string">&quot;run_state&quot;</span>: <span class="hljs-string">&quot;finished&quot;</span>,
+    <span class="hljs-string">&quot;start&quot;</span>: <span class="hljs-string">&quot;2022-04-09T05:09:00Z&quot;</span>
+  }
+}
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(<span class="hljs-title function_">_sumEnhancedEntries</span>(enhancedEntriesNoProgress), <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>))
+<span class="hljs-string">`{
+  &quot;run_state&quot;: &quot;running&quot;,
+  &quot;estimated_time_left_h_m_s&quot;: &quot;unknown (not enough progress yet)&quot;
+}`</span>
+
+
+<span class="hljs-keyword">const</span> enhancedEntriesWithProgress = {
+  <span class="hljs-string">&#x27;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU&#x27;</span>: {
+    <span class="hljs-string">&#x27;duration&#x27;</span>: <span class="hljs-number">335613000000</span>,
+    <span class="hljs-string">&#x27;duration_ms&#x27;</span>: <span class="hljs-number">335613</span>,
+    <span class="hljs-string">&#x27;end&#x27;</span>: <span class="hljs-string">&#x27;2022-04-08T21:10:34Z&#x27;</span>,
+    <span class="hljs-string">&#x27;progress&#x27;</span>: {
+      <span class="hljs-string">&#x27;percentage&#x27;</span>: <span class="hljs-number">100</span>
+    },
+    <span class="hljs-string">&#x27;run_state&#x27;</span>: <span class="hljs-string">&#x27;finished&#x27;</span>,
+    <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-string">&#x27;2022-04-08T21:05:00Z&#x27;</span>
+  },
+  <span class="hljs-string">&#x27;tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh&#x27;</span>: {
+    <span class="hljs-string">&#x27;duration&#x27;</span>: <span class="hljs-number">1390740000000</span>,
+    <span class="hljs-string">&#x27;duration_ms&#x27;</span>: <span class="hljs-number">1390740</span>,
+    <span class="hljs-string">&#x27;progress&#x27;</span>: {
+      <span class="hljs-string">&#x27;percentage&#x27;</span>: <span class="hljs-number">76.66666666666667</span>
+    },
+    <span class="hljs-string">&#x27;run_state&#x27;</span>: <span class="hljs-string">&#x27;running&#x27;</span>,
+    <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-string">&#x27;2022-04-08T21:05:00Z&#x27;</span>,
+    <span class="hljs-string">&#x27;seconds_since_last_update&#x27;</span>: <span class="hljs-number">359</span>,
+    <span class="hljs-string">&#x27;estimated_time_left_seconds&#x27;</span>: <span class="hljs-number">423</span>,
+    <span class="hljs-string">&#x27;estimated_time_left_h_m_s&#x27;</span>: <span class="hljs-string">&#x27;7m 03s&#x27;</span>,
+    <span class="hljs-string">&#x27;eta_local&#x27;</span>: <span class="hljs-string">&#x27;2:41:13 PM PDT&#x27;</span>
+  }
+}
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(<span class="hljs-title function_">_sumEnhancedEntries</span>(enhancedEntriesWithProgress), <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>))
+<span class="hljs-string">`{
+  &quot;run_state&quot;: &quot;running&quot;,
+  &quot;estimated_time_left_seconds&quot;: 423,
+  &quot;estimated_time_left_h_m_s&quot;: &quot;7m 03s&quot;,
+  &quot;eta_local&quot;: &quot;2:41:13 PM PDT&quot;
+}`</span>
+ <span class="hljs-string">`</span></code></pre></div><div class="section-id" id="defaultOptions"></div><div class="card" data-name="defaultOptions" data-access="public" data-category="Miscellaneous" display=""><h2><a class="name" tabindex="3" href="#defaultOptions">defaultOptions</a><a class="source-code-link" target="_blank" title="View source on GitHub" href="https://github.com/eluv-io/elv-lro-status/blob/v2.0.1/src/defaultOptions.js#L28"><img src="./images/box-arrow-up-right.svg"></a><span class="label-category-big" data-category="Miscellaneous">Miscellaneous</span></h2><div class="sig-container"><code class="sig">() → Object</code></div><div class="params" data-expanded="false"><a class="toggle-params" href="#expand">Parameters</a><div class="details panel panel-default"><ul class="list-group"><li class="list-group-item"><em>Returns:</em><strong class="ms-1">Object</strong><span class="ms-1 description"><p>Partially populated options  object</p></span></li></ul></div></div><div class="description mt-1"><p>Returns an object containing default options for <code>enhanceLROStatus</code> and <code>enhanceLROStatusEntry</code>.</p>
 <p>Note that you must still add a <code>currentTime</code> property to the result before use.</p></div><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> defaultOptions = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@eluvio/elv-lro-status/defaultOptions&#x27;</span>)
 
 <span class="hljs-comment">// Output when system is set to US / Pacific timezone</span>

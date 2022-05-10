@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Test</title>
+</head>
+<body  onload="populateList()">
+  <ul>
+      <li id="locale"></li>
+      <li id="stallThreshold"></li>
+      <li id="timezone"></li>
+  </ul>
+<script src="../../build/dist/elv-lro-status.js"></script>
+<script type="application/javascript">
+  function populateList() {
+    const o = ElvLROStatus.defaultOptions()
+    document.getElementById("locale").innerText = 'Locale is: ' + o.locale
+    document.getElementById("stallThreshold").innerText = 'Stall threshold is: ' + o.stallThreshold
+    document.getElementById("timezone").innerText = 'Time zone is: ' + o.timezone
+  }
+</script>
+</body>
+</html>

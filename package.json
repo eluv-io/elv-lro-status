@@ -17,8 +17,8 @@
     "generate-docs": "echo 'Regenerating documentation in ./docs...' && jsdoc --readme README.md --configure .jsdoc.json",
     "generate-docs-debug": "echo 'Regenerating documentation in ./docs (with debug output)...' && export ELV_RAMDOC_DEBUG=1;jsdoc --readme README.md --configure .jsdoc.json",
     "release": "echo 'Incrementing version and publishing to npmjs.com...' && cp package.json ./build/package.json && np",
-    "test": "echo 'Running all tests in ./test...' && mocha --recursive \"./test/**/*.test.js\"",
-    "test-coverage": "echo 'Running all tests in ./test... (with test coverage report)' && nyc --reporter=html --reporter=text mocha --recursive \"./test/**/*.test.js\" && echo 'open ./coverage/index.html for coverage details'",
+    "test": "echo 'Running all tests in ./test...' && npm run build-main-js && mocha --recursive \"./test/**/*.test.js\"",
+    "test-coverage": "echo 'Running all tests in ./test... (with test coverage report)' && npm run build-main-js && nyc --reporter=html --reporter=text mocha --recursive \"./test/**/*.test.js\" && echo 'open ./coverage/index.html for coverage details'",
     "update-dependencies": "echo 'Updating dependencies in package.json and installing any new version(s)...' && npx npm-check-updates -u && npm install",
     "version": "echo 'Executing npm publish hook: version... (rebuilds docs with new version number and rebuilds ./build/dist)' && npm run generate-docs && npm run build && git add docs || git commit -m 'Update docs' || true"
   },

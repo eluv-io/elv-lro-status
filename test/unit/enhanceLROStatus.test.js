@@ -11,9 +11,9 @@ const R = require('ramda')
 
 const utcStrToDate = require('@eluvio/elv-js-helpers/utcStrToDate')
 
-const defaultOptions = require('../src/defaultOptions')
-const enhanceLROStatus = require('../src/enhanceLROStatus')
-const ERS = require('../src/enhancedRunState')
+const defaultOptions = require('../../src/defaultOptions')
+const enhanceLROStatus = require('../../src/enhanceLROStatus')
+const ERS = require('../../src/enhancedRunState')
 
 const dump = x => console.log(JSON.stringify(x, null, 2))
 

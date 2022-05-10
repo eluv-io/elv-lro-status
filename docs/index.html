@@ -1,24 +1,74 @@
 <!DOCTYPE html><html class="docs-page" lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="shortcut icon" href="./images/favicon.png"><link href="./css/style.css" rel="stylesheet"><title></title></head><body><!-- ENTIRE BROWSER VIEW AREA--><div class="d-flex flex-column vh-100" id="viewport"><!-- PAGE HEADER--><div class="d-flex flex-row border navbar fixed-top align-items-stretch" id="header-row"><div class="d-flex flex-wrap align-items-center" id="logo-container"><a href="https://eluv.io" target="_blank"><img class="m-1" src="./images/logo.png"></a></div><div class="nav d-flex flex-wrap align-items-stretch" id="title-container"><ul class="nav"><li class="nav-link" id="project-name"><strong>@eluvio/elv-lro-status</strong><span class="ms-1" id="version">v2.0.1</span></li><li class="nav-link active-header-tab" id="nav-home-li"><a id="nav-home" href="#">Home</a></li><li class="nav-link" id="nav-api-li"><a id="nav-api" href="./api.html">API Documentation</a></li></ul></div><div class="flex-fill" id="header-space-fill"></div><div id="github-link-container"><ul class="nav"><li class="nav-link"><a href="https://github.com/eluv-io/elv-lro-status" target="_blank">Github</a></li></ul></div></div><!-- LOWER PANE--><div class="d-flex flex-col flex-fill justify-content-center" id="readme-container"><div id="readme"><h1>elv-lro-status</h1>
-<p>A library for enhancing the transcoding progress info returned by the <strong>elv-client-js</strong> <code>LROStatus()</code> API call, providing
-the following:</p>
+<p>A library for enhancing the transcoding progress info returned by the <strong>elv-client-js</strong> <code>LROStatus()</code> API call,
+providing the following:</p>
 <ul>
 <li>Human-friendly 'time left' estimates and ETA expressed in local time</li>
 <li>Stalled LRO detection</li>
 <li>Warnings if an LRO produces too many or too few mezzanine parts</li>
 <li>A summary that rolls up all the LROs into a status for the mezzanine offering as a whole.</li>
 </ul>
-<p><strong>NOTE:</strong> ETA computation and stall detection depend on knowing the current time accurately. The current time is passed in as a parameter to the main function call EnhancedStatus(), allowing client to obtain current time from a source other than system clock if desired.</p>
+<p><strong>NOTE:</strong> ETA computation and stall detection depend on knowing the current time accurately. The current time is passed
+in as part of the <code>options</code> parameter to the main function call <code>enhancedLROStatus()</code>, allowing client to obtain current
+time from a source other than system clock if desired.</p>
 <h2>Installation</h2>
 <h4>Install from NPM:</h4>
 <pre class="prettyprint source"><code>npm install --save @eluvio/elv-lro-status
 </code></pre>
 <h2>Usage</h2>
 <h3>Node.js</h3>
-<p>// TODO : update with docs on requiring pieces</p>
-<p><strong>NOTE:</strong> The code examples assume you have a <code>const</code> named <code>client</code> that is a successfully prepared ElvClient
+<p>It is possible to import individual items or the entire library, depending on whether code size is a concern.</p>
+<h3>Entire library (CommonJS)</h3>
+<pre class="prettyprint source lang-javascript"><code>// namespace entire suite to a const
+const L = require('@eluvio/elv-lro-status')
+
+// create references to particular items in order to avoid needing to use L. prefix
+const {enhanceLROStatus, defaultOptions} = L
+const {_maxEnhancedState} = L.internal
+
+// Note that the following syntax still causes entire library to be bundled into your project
+const {enhanceLROStatus, defaultOptions} = require('@eluvio/elv-lro-status')
+</code></pre>
+<h3>Entire library (JS Modules)</h3>
+<pre class="prettyprint source lang-javascript"><code>// namespace entire suite to L
+import L from '@eluvio/elv-lro-status'
+
+// create references to particular items in order to avoid needing to use H. prefix
+const {enhanceLROStatus, defaultOptions} = L
+const {_maxEnhancedState} = L.internal
+
+// Note that the following syntax still causes entire library to be bundled into your project
+import {enhanceLROStatus, defaultOptions} from '@eluvio/elv-lro-status'
+</code></pre>
+<h3>Individual items (CommonJS)</h3>
+<pre class="prettyprint source lang-javascript"><code>// require in each item directly
+const enhanceLROStatus = require('@eluvio/elv-lro-status/enhanceLROStatus')
+const defaultOptions = require('@eluvio/elv-lro-status/defaultOptions')
+const _maxEnhancedState = require('@eluvio/elv-lro-status/internal/_maxEnhancedState')
+</code></pre>
+<h3>Individual items (JS Modules)</h3>
+<pre class="prettyprint source lang-javascript"><code>// import in each item directly
+import enhanceLROStatus from '@eluvio/elv-lro-status/enhanceLROStatus'
+import defaultOptions from '@eluvio/elv-lro-status/defaultOptions'
+import _maxEnhancedState from '@eluvio/elv-lro-status/internal/_maxEnhancedState'
+</code></pre>
+<h3>Entire library (browser)</h3>
+<p>It is also possible to import the entire library directly into a browser via a <code>&lt;script&gt;</code> tag
+pointing to either <code>dist/elv-lro-status.js</code> or <code>dist/elv-lro-status.min.js</code>. This will create a variable named
+<code>ElvLROStatus</code> in the global namespace. There is no support for importing individual items via a <code>&lt;script&gt;</code> tag. (It is
+expected that browser apps would be built using a bundling tool like Webpack/Rollup/Parcel)</p>
+<pre class="prettyprint source lang-html"><code>&lt;!-- Import entire library as ElvLROStatus -->
+&lt;script src=&quot;node_modules/@eluvio/elv-lro-status/dist/elv-lro-status.js&quot;>&lt;/script>
+&lt;script type=&quot;application/javascript&quot;>
+    console.log('Default options: ' + JSON.stringify(ElvLROStatus.defaultOptions(), null, 2))
+&lt;/script>
+</code></pre>
+<h2>API Documentation</h2>
+<p><a href="https://eluv-io.github.io/elv-lro-status/api.html">https://eluv-io.github.io/elv-lro-status/api.html</a></p>
+<h2>Examples</h2>
+<p><strong>NOTE:</strong> These code examples assume you have a <code>const</code> named <code>client</code> that is a successfully prepared ElvClient
 instance. (See elv-client-js README sections <a href="https://github.com/eluv-io/elv-client-js#initialization">Initialization</a>
 and <a href="https://github.com/eluv-io/elv-client-js#authorization">Authorization</a>)</p>
-<p>It is important to only call <code>EnhancedStatus()</code> if your call to <code>ElvClient.LROStatus()</code> succeeded.</p>
+<p>It is important to only call <code>enhanceLROStatus()</code> if your call to <code>ElvClient.LROStatus()</code> succeeded.</p>
 <p>Note that temporary network connectivity issues may cause your call to <code>ElvClient.LROStatus()</code> to fail and throw an
 exception - you should catch exceptions and retry periodically unless the exception indicates an irrecoverable error (
 e.g. 'object not found' or 'unauthorized').</p>
@@ -143,8 +193,8 @@ the function would return:</p>
 }
 </code></pre>
 <h4>Normal case (LRO not stalled)</h4>
-<p>If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to <code>enhanceLROStatus()</code>, the
-function would return:</p>
+<p>If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to <code>enhanceLROStatus()</code>,
+the function would return:</p>
 <pre class="prettyprint source lang-json"><code>{
   &quot;ok&quot;: true,
   &quot;result&quot;: {
@@ -185,8 +235,7 @@ function would return:</p>
 <p>The <code>ok</code> property only indicates that input data was correctly structured and that no exceptions were thrown during data
 inspection and summarization - it <strong>DOES NOT</strong> indicate that the LROs are ok.</p>
 <h4>Stalled LRO</h4>
-<p>If we obtained the same data one hour later and passed it to <code>enhanceLROStatus()</code>, the function would
-return:</p>
+<p>If we obtained the same data one hour later and passed it to <code>enhanceLROStatus()</code>, the function would return:</p>
 <pre class="prettyprint source lang-json"><code>{
   &quot;ok&quot;: true,
   &quot;result&quot;: {
@@ -225,8 +274,8 @@ return:</p>
 <h3>Bad data</h3>
 <p>If the data obtained from <code>ElvClient.LROStatus()</code> is somehow invalid, then the object returned by <code>enhanceLROStatus()</code>
 will have <code>ok</code> set to <code>false</code> and also have an <code>errors</code> property set to an array of error message strings, as well as an
-<code>errorDetails</code> property with more detailed error information (if available - if no further information is
-available, it will contain the same strings as <code>errors</code>).</p>
+<code>errorDetails</code> property with more detailed error information (if available - if no further information is available, it
+will contain the same strings as <code>errors</code>).</p>
 <p>For example, if somehow the <code>LROStatus()</code> call returned <code>-1000</code> for one of the LRO's <code>duration_ms</code> field,
 then <code>enhanceLROStatus()</code> would return:</p>
 <pre class="prettyprint source lang-json"><code>{

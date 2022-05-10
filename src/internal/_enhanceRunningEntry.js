@@ -48,7 +48,7 @@ const ERS = require('../enhancedRunState')
  *   }
  * )
  *
- * const enhanced = _enhanceRunningEntry(lro)
+ * const enhanced = _enhanceRunningEntry(options, lro)
  *
  * console.log(Pair.fst())
  * 'tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh'

@@ -41,7 +41,7 @@ const ERS = require('../enhancedRunState')
  * console.log(Pair.fst())
  * 'tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be'
  *
- * console.log(JSON.stringify(Pair.snd(), null, 2)
+ * console.log(JSON.stringify(enhanced.snd(), null, 2)
  * `{
  *   "duration": 12747000000,
  *   "duration_ms": 12747,
@@ -57,7 +57,7 @@ const ERS = require('../enhancedRunState')
  * lro.map(x => x.progress.percentage = 120)
  *
  * const enhancedBadData = _enhanceNonRunningEntry(lro)
- * console.log(JSON.stringify(enhancedBadData, null, 2))
+ * console.log(JSON.stringify(enhancedBadData.snd(), null, 2))
  * `{
  *   "duration": 12747000000,
  *   "duration_ms": 12747,
@@ -65,7 +65,7 @@ const ERS = require('../enhancedRunState')
  *   "progress": {
  *     "percentage": 120
  *   },
- *   "run_state": "bad_percentage",
+ *   "run_state": "bad percentage",
  *   "start": "2022-04-09T05:09:00Z",
  *   "reported_run_state": "finished",
  *   "warning": "Job tlro1Ejh9gNWAaTmfWJKeuu99V2MZ17XXkSvGJyKKJpmqtmJ2fzo5Fb3Be has run_state 'finished', but progress pct is 120"
