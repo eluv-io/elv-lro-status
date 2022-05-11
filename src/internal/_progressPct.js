@@ -1,7 +1,7 @@
 const path = require('ramda/src/path')
 
 /**
- * Retrieves progress percent from LRO Status entry, protecting against missing keys
+ * Retrieves progress percentage from LRO Status entry, protecting against missing keys
  *
  * @function
  * @private
@@ -13,9 +13,9 @@ const path = require('ramda/src/path')
  *
  * const _progressPct = require('@eluvio/elv-lro-status/internal/_progressPct')
  *
- * _progressPct({progress: {pct: 10}}) //=> 10
+ * _progressPct({progress: {percentage: 10}}) //=> 10
  *
- * _progressPct({})                    //=> undefined
+ * _progressPct({})                           //=> undefined
  *
  */
 const _progressPct = path(['progress', 'percentage'])

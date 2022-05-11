@@ -11,7 +11,7 @@ providing the following:</p>
 in as part of the <code>options</code> parameter to the main function call <code>enhancedLROStatus()</code>, allowing client to obtain current
 time from a source other than system clock if desired.</p>
 <h2>Installation</h2>
-<h4>Install from NPM:</h4>
+<h3>Install from NPM:</h3>
 <pre class="prettyprint source"><code>npm install --save @eluvio/elv-lro-status
 </code></pre>
 <h2>Usage</h2>
@@ -73,42 +73,41 @@ and <a href="https://github.com/eluv-io/elv-client-js#authorization">Authorizati
 exception - you should catch exceptions and retry periodically unless the exception indicates an irrecoverable error (
 e.g. 'object not found' or 'unauthorized').</p>
 <pre class="prettyprint source lang-js"><code>const defaultOptions = require('@eluvio/elv-lro-status/defaultOptions')
-const enhanceLROStatus = require('@eluvio/elv-lro-status/enhanceLROStatus');
+const enhanceLROStatus = require('@eluvio/elv-lro-status/enhanceLROStatus')
 
 const status = await client.LROStatus({
   libraryId: 'ilib3JgZBNxZE8ZkM4jP8YUAdTnjukWV',
   objectId: 'iq__4Ym91uVyPhayTRsew3ixQ8aGDJjy'
-});
+})
 
 // check to make sure we received data back
-if (status === undefined) throw Error(&quot;Received no job status information from server - object already finalized?&quot;);
+if (status === undefined) throw Error(&quot;Received no job status information from server - object already finalized?&quot;)
 
 const options = Object.assign(defaultOptions(), {currentTime: new Date})
-const enhancedStatus = enhanceLROStatus(options, status);
+const enhancedStatus = enhanceLROStatus(options, status)
 
 if (enhancedStatus.ok) {
-  console.log('Individual LRO statuses');
+  console.log('Individual LRO statuses')
   console.log(
     JSON.stringify(
       enhancedStatus.result.LROs,
       null,
       2
     )
-  );
-  console.log('Overall status summary');
+  )
+  console.log('Overall status summary')
   console.log(
     JSON.stringify(
       enhancedStatus.result.summary,
       null,
       2
     )
-  );
+  )
 } else {
-  console.error(&quot;Error during processing:&quot;);
-  console.error(enhancedStatus.errors.join(&quot;\n&quot;));
+  console.error(&quot;Error during processing:&quot;)
+  console.error(enhancedStatus.errors.join(&quot;\n&quot;))
 }
 </code></pre>
-<h2>Examples</h2>
 <h3>One LRO finished, one LRO started (but no progress reported yet)</h3>
 <p>Sample data from <code>ElvClient.LROStatus()</code>:</p>
 <pre class="prettyprint source lang-json"><code>{
@@ -192,7 +191,7 @@ the function would return:</p>
   }
 }
 </code></pre>
-<h4>Normal case (LRO not stalled)</h4>
+<h3>Normal case (LRO not stalled)</h3>
 <p>If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to <code>enhanceLROStatus()</code>,
 the function would return:</p>
 <pre class="prettyprint source lang-json"><code>{
@@ -234,7 +233,7 @@ the function would return:</p>
 </code></pre>
 <p>The <code>ok</code> property only indicates that input data was correctly structured and that no exceptions were thrown during data
 inspection and summarization - it <strong>DOES NOT</strong> indicate that the LROs are ok.</p>
-<h4>Stalled LRO</h4>
+<h3>Stalled LRO</h3>
 <p>If we obtained the same data one hour later and passed it to <code>enhanceLROStatus()</code>, the function would return:</p>
 <pre class="prettyprint source lang-json"><code>{
   &quot;ok&quot;: true,

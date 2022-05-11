@@ -14,7 +14,7 @@ time from a source other than system clock if desired.
 
 ## Installation
 
-#### Install from NPM:
+### Install from NPM:
 
 ```
 npm install --save @eluvio/elv-lro-status
@@ -105,43 +105,41 @@ e.g. 'object not found' or 'unauthorized').
 
 ```js
 const defaultOptions = require('@eluvio/elv-lro-status/defaultOptions')
-const enhanceLROStatus = require('@eluvio/elv-lro-status/enhanceLROStatus');
+const enhanceLROStatus = require('@eluvio/elv-lro-status/enhanceLROStatus')
 
 const status = await client.LROStatus({
   libraryId: 'ilib3JgZBNxZE8ZkM4jP8YUAdTnjukWV',
   objectId: 'iq__4Ym91uVyPhayTRsew3ixQ8aGDJjy'
-});
+})
 
 // check to make sure we received data back
-if (status === undefined) throw Error("Received no job status information from server - object already finalized?");
+if (status === undefined) throw Error("Received no job status information from server - object already finalized?")
 
 const options = Object.assign(defaultOptions(), {currentTime: new Date})
-const enhancedStatus = enhanceLROStatus(options, status);
+const enhancedStatus = enhanceLROStatus(options, status)
 
 if (enhancedStatus.ok) {
-  console.log('Individual LRO statuses');
+  console.log('Individual LRO statuses')
   console.log(
     JSON.stringify(
       enhancedStatus.result.LROs,
       null,
       2
     )
-  );
-  console.log('Overall status summary');
+  )
+  console.log('Overall status summary')
   console.log(
     JSON.stringify(
       enhancedStatus.result.summary,
       null,
       2
     )
-  );
+  )
 } else {
-  console.error("Error during processing:");
-  console.error(enhancedStatus.errors.join("\n"));
+  console.error("Error during processing:")
+  console.error(enhancedStatus.errors.join("\n"))
 }
 ```
-
-## Examples
 
 ### One LRO finished, one LRO started (but no progress reported yet)
 
@@ -237,7 +235,7 @@ Sample data from `ElvClient.LROStatus()`:
 }
 ```
 
-#### Normal case (LRO not stalled)
+### Normal case (LRO not stalled)
 
 If we obtained the above data at 2:34:10 PM PDT on April 8th, 2022 and immediately passed it to `enhanceLROStatus()`,
 the function would return:
@@ -284,7 +282,7 @@ the function would return:
 The `ok` property only indicates that input data was correctly structured and that no exceptions were thrown during data
 inspection and summarization - it **DOES NOT** indicate that the LROs are ok.
 
-#### Stalled LRO
+### Stalled LRO
 
 If we obtained the same data one hour later and passed it to `enhanceLROStatus()`, the function would return:
 
