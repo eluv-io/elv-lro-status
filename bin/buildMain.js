@@ -19,6 +19,7 @@ fileParts.push('module.exports = {')
 fileParts.push('  internal,')
 
 const srcTopLevelRequires = jsFileBasenamesList('src')
+  .filter(basename => basename !== 'main')
   .map(basename => `  ${basename}: require('./${basename}')`)
   .join(',\n')
 fileParts.push(srcTopLevelRequires)

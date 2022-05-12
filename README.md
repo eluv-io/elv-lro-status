@@ -24,7 +24,8 @@ npm install --save @eluvio/elv-lro-status
 
 ### Node.js
 
-It is possible to import individual items or the entire library, depending on whether code size is a concern.
+It is possible to import individual items or the entire library, depending on whether code size is a critical concern. 
+However, this library is fairly narrow in scope, you may not see a large difference in final size between the two approaches.
 
 ### Entire library (CommonJS)
 
