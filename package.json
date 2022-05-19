@@ -33,14 +33,14 @@
   "author": "Eluvio, Inc.",
   "license": "MIT",
   "devDependencies": {
-    "@eluvio/elv-ramdoc": "^0.1.0",
+    "@eluvio/elv-ramdoc": "^0.1.2",
     "chai": "^4.3.6",
     "chai-things": "^0.2.0",
     "eslint": "^8.15.0",
     "jsdoc": "^3.6.10",
     "mocha": "^10.0.0",
     "np": "^7.6.1",
-    "npm-check-updates": "^12.5.11",
+    "npm-check-updates": "^13.0.1",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "uglify-js": "^3.15.5",
@@ -49,7 +49,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@eluvio/elv-js-helpers": "^3.2.0",
+    "@eluvio/elv-js-helpers": "^3.2.1",
     "kind-of": "^6.0.3",
     "ramda": "^0.28.0"
   }
