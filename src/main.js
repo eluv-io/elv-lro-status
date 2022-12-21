@@ -18,5 +18,6 @@ module.exports = {
   enhanceLROStatus: require('./enhanceLROStatus'),
   enhanceLROStatusEntry: require('./enhanceLROStatusEntry'),
   enhancedRunState: require('./enhancedRunState'),
-  lroRunState: require('./lroRunState')
+  lroRunState: require('./lroRunState'),
+  mergeDefaultOptions: require('./mergeDefaultOptions')
 }

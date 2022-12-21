@@ -7,7 +7,7 @@ const expect = chai.expect
 
 const kindOf = require('kind-of')
 
-const R = require('ramda')
+const R = require('@eluvio/ramda-fork')
 
 const utcStrToDate = require('@eluvio/elv-js-helpers/utcStrToDate')
 
@@ -78,9 +78,62 @@ const LRO_BAD_DATA = {
   }
 }
 
+const TEST_CASE_2_RUNNING_NO_PROGRESS = {
+  'tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR': {
+    'duration': 0,
+    'duration_ms': 0,
+    'progress': {
+      'percentage': 0
+    },
+    'run_state': 'running',
+    'start': '2022-05-18T21:37:59Z'
+  },
+  'tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwpRg8EDvAQiwVJgg9w6MQT2': {
+    'duration': 0,
+    'duration_ms': 0,
+    'progress': {
+      'percentage': 0
+    },
+    'run_state': 'running',
+    'start': '2022-05-18T21:37:59Z'
+  }
+}
+
+const TEST_CASE_EXTRA_DATA_LRO = {
+  'tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR': {
+    'desc': 'description',
+    'duration': 0,
+    'duration_ms': 0,
+    'key': 'LRO key',
+    'name': 'LRO name',
+    'progress': {
+      'details': {},
+      'percentage': 0
+    },
+    'run_state': 'running',
+    'start': '2022-05-18T21:37:59Z'
+  },
+  'tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwpRg8EDvAQiwVJgg9w6MQT2': {
+    'duration': 0,
+    'duration_ms': 0,
+    'progress': {
+      'percentage': 0
+    },
+    'run_state': 'running',
+    'start': '2022-05-18T21:37:59Z'
+  }
+}
+
+
 const optionsPlusTime = t => R.assoc('currentTime', t, defaultOptions())
 
 describe('enhanceLROStatus', function () {
+
+  const retVal2RunningNoProgress = enhanceLROStatus(
+    optionsPlusTime(testCaseMinCurrentTime(TEST_CASE_2_RUNNING_NO_PROGRESS)),
+    TEST_CASE_2_RUNNING_NO_PROGRESS
+  )
+
   const retValRunningWithProgress = enhanceLROStatus(
     optionsPlusTime(testCaseMinCurrentTime(LRO_1_FINISHED_1_RUNNING)),
     LRO_1_FINISHED_1_RUNNING
@@ -101,7 +154,16 @@ describe('enhanceLROStatus', function () {
     LRO_BAD_DATA
   )
 
+  const retValExtraData = enhanceLROStatus(
+    optionsPlusTime(testCaseMinCurrentTime(TEST_CASE_EXTRA_DATA_LRO)),
+    TEST_CASE_EXTRA_DATA_LRO
+  )
+
   it('should return ok true for valid data', () => {
+
+    if (!retVal2RunningNoProgress.ok) dump(retVal2RunningNoProgress)
+    retVal2RunningNoProgress.ok.should.be.true
+
     if (!retValRunningWithProgress.ok) dump(retValRunningWithProgress)
     retValRunningWithProgress.ok.should.be.true
 
@@ -110,6 +172,16 @@ describe('enhanceLROStatus', function () {
 
     if (!retValStalled.ok) dump(retValStalled)
     retValStalled.ok.should.be.true
+
+    if (!retValExtraData.ok) dump(retValExtraData)
+    retValExtraData.ok.should.be.true
+  })
+
+  it('should return extra data if present', ()=> {
+    retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.progress.details.should.eql({})
+    retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.desc.should.equal('description')
+    retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.key.should.equal('LRO key')
+    retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.name.should.equal('LRO name')
   })
 
   // note: this test depends on system locale and time zone

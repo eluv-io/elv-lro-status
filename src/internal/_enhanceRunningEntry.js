@@ -1,4 +1,4 @@
-const mergeRight = require('ramda/src/mergeRight')
+const mergeRight = require('@eluvio/ramda-fork/src/mergeRight')
 
 const estRemainingDur = require('@eluvio/elv-js-helpers/estRemainingDur')
 const etaDurationStr = require('@eluvio/elv-js-helpers/etaDurationStr')

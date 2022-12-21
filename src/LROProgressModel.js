@@ -1,4 +1,4 @@
-const defSealedObjModel = require('@eluvio/elv-js-helpers/defSealedObjModel')
+const defObjModel = require('@eluvio/elv-js-helpers/defObjModel')
 const NonNegativeNumModel = require('@eluvio/elv-js-helpers/NonNegativeNumModel')
 
 /**
@@ -15,18 +15,23 @@ const NonNegativeNumModel = require('@eluvio/elv-js-helpers/NonNegativeNumModel'
  *
  * const LROProgressModel = require('@eluvio/elv-lro-status/LROProgressModel')
  *
- * LROProgressModel({})                         //=> EXCEPTION: 'expecting percentage to be Number, got undefined'
+ * LROProgressModel({})                            //=> EXCEPTION: 'expecting percentage to be Number, got undefined'
  *
- * LROProgressModel({percentage: -2})           //=> EXCEPTION: 'percentage must be >= 0 (got: -2)'
+ * LROProgressModel({percentage: -2})              //=> EXCEPTION: 'percentage must be >= 0 (got: -2)'
  *
- * LROProgressModel({percentage: 10})           //=> {percentage: 10} // proxied by ObjectModel
+ * LROProgressModel({percentage: 10})              //=> {percentage: 10} // proxied by ObjectModel
  *
- * LROProgressModel({percentage: 10, files: 7}) //=> EXCEPTION: 'Unrecognized property name(s): files'
+ * LROProgressModel({percentage: 10, files: 7})    //=> {percentage: 10, files: 7} // proxied by ObjectModel
+
+ * // NOTE: Object.keys and JSON.stringify will drop attributes not declared in model:
+ * JSON.stringify(
+ *   LROProgressModel({percentage: 10, files: 7})
+ * )                                               //=> '{"percentage": 10}'
  *
- * LROProgressModel('foo')                      //=> EXCEPTION: `expecting Object, got String "foo"`
+ * LROProgressModel('foo')                         //=> EXCEPTION: `expecting Object, got String "foo"`
  *
  */
-const LROProgressModel = defSealedObjModel(
+const LROProgressModel = defObjModel(
   'LROProgress',
   {
     percentage: NonNegativeNumModel

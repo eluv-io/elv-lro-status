@@ -1,7 +1,7 @@
 const chai = require('chai')
 chai.should()
 
-const equals = require('ramda/src/equals')
+const equals = require('@eluvio/ramda-fork/src/equals')
 
 const Pair = require('@eluvio/elv-js-helpers/Pair')
 

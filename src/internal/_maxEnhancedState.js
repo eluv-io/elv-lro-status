@@ -1,6 +1,6 @@
-const fromPairs = require('ramda/src/fromPairs') // not to be confused with @elv-js-helpers/fromPairs
-const last = require('ramda/src/last')
-const sortBy = require('ramda/src/sortBy')
+const fromPairs = require('@eluvio/ramda-fork/src/fromPairs') // not to be confused with @elv-js-helpers/fromPairs
+const last = require('@eluvio/ramda-fork/src/last')
+const sortBy = require('@eluvio/ramda-fork/src/sortBy')
 
 const {STATE_UNKNOWN, STATES} = require('../enhancedRunState')
 const mapWithIndex = require('@eluvio/elv-js-helpers/mapWithIndex')

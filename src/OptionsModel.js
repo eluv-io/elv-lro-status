@@ -1,15 +1,12 @@
-const defObjModel = require('@eluvio/elv-js-helpers/defObjModel')
+const defSealedObjModel = require('@eluvio/elv-js-helpers/defSealedObjModel')
 const DatetimeModel = require('@eluvio/elv-js-helpers/DatetimeModel')
 const PositiveNumModel = require('@eluvio/elv-js-helpers/PositiveNumModel')
-const defaultOptions = require('./defaultOptions')
 
 /**
  * An [ObjectModel](http://objectmodel.js.org/) which validates that an input is:
  *
  * * A [Javascript Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
  * * Satisfies the field definitions for `options` argument used by `enhanceLROStatus` and `enhanceLROStatusEntry`.
- *
- * It also populates defaults for `locale`, `stallThreshold`, and `timezone` if missing.
  *
  * @function
  * @category Model
@@ -35,8 +32,7 @@ const defaultOptions = require('./defaultOptions')
  *
  *
  */
-// TODO: switch to sealed model (may need to add 'defaults' argument to defSealedObjModel)
-const OptionsModel = defObjModel(
+const OptionsModel = defSealedObjModel(
   'options',
   {
     currentTime: DatetimeModel,
@@ -44,6 +40,6 @@ const OptionsModel = defObjModel(
     stallThreshold: PositiveNumModel,
     timezone: String
   }
-).defaultTo(defaultOptions())
+)
 
 module.exports = OptionsModel

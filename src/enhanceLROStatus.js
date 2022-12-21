@@ -7,14 +7,14 @@ const validator = require('@eluvio/elv-js-helpers/validator')
 
 const _enhanceLROStatus = require('./internal/_enhanceLROStatus')
 const LROStatusModel = require('./LROStatusModel')
-const OptionsModel = require('./OptionsModel')
+const mergeDefaultOptions = require('./mergeDefaultOptions')
 
 /**
  * Processes a response from an [ElvClient.LROStatus()](https://eluv-io.github.io/elv-client-js/module-ElvClient_ABRPublishing.html#.LROStatus)
  * API call, checking for stalled LROs and bad percentages, adding ETA fields if applicable, and adding a summary.
  *
  * @function
- * @category Model
+ * @category Conversion
  * @sig (Object, Object) -> Object
  * @param {Object} options
  * @param {Date} options:currentTime - The value to use for current time (this is used to compute `eta_local`)
@@ -101,7 +101,7 @@ const OptionsModel = require('./OptionsModel')
  */
 const enhanceLROStatus = (options, lroStatus) => {
   const checkedLROStatus = validator(LROStatusModel)(lroStatus)
-  const checkedOptions = validator(OptionsModel)(options)
+  const checkedOptions = mergeDefaultOptions(options)
   const result = liftA2Join(_enhanceLROStatus, checkedOptions, checkedLROStatus)
 
   return resultToPOJO(result)

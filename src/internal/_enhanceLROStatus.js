@@ -9,23 +9,23 @@ const toPairs = require('@eluvio/elv-js-helpers/toPairs')
 const enhanceLROStatusEntry = require('../enhanceLROStatusEntry')
 const _sumEnhancedEntries = require('./_sumEnhancedEntries')
 
-// returns either Ok(enhancedLROStatus) or Err
 /**
- * Returns the enhanced run state with maximum precedence from a list, or `STATE_UNKNOWN` if an empty list passed in
+ * Enhance lroResult data obtained via [ElvClient.LROStatus()](https://eluv-io.github.io/elv-client-js/module-ElvClient_ABRPublishing.html#.LROStatus).
+ *
+ * Returns a [Crocks Result](https://crocks.dev/docs/crocks/Result.html), either Ok(enhancedLROStatus)
+ * or Err(array of errors)
+ *
+ * Internal function, does not validate inputs or unwrap return value to supply a plain object to caller. See source code
+ * for public counterpart [enhanceLROStatus](#enhanceLROStatus) for example usage.
  *
  * @function
+ * @curried
  * @private
  * @category Conversion
- * @sig [String] -> String
- * @param {String[]} list - An array of enhanced run states
- * @returns {String} The state with the highest precedence, or value or `STATE_UNKNOWN` if `list` is empty.
- * @example
- *
- * const _maxEnhancedState = require('@eluvio/elv-lro-status/internal/_maxEnhancedState')
- *
- * _maxEnhancedState(['running', 'stalled']) //=> 'stalled'
- *
- * _maxEnhancedState([])                     //=> 'unknown'
+ * @sig Object -> Object -> Result
+ * @param {Object} options - An object containing options for enhanceLROStatus call
+ * @param {Object} lroStatus - Data from an `ElvClient.LROStatus()` call - a key/value map with LRO ID key and LRO status value
+ * @returns {Result} A [Crocks Result](https://crocks.dev/docs/crocks/Result.html) wrapping either the enhanced lroStatus object or an array of errors
  *
  */
 const _enhanceLROStatus = curry(
@@ -33,10 +33,12 @@ const _enhanceLROStatus = curry(
 
     const kvPairs = toPairs(lroStatus) // convert to Crocks List of Pairs
 
+    // enhance each individual LRO status entry
     const processedPairList = kvPairs.map(enhanceLROStatusEntry(options))
 
-    // At this point, we have List( Ok(Pair(lroID, status)) |  Err([errorMsgStrings])
-    // Consolidate, convert to Ok(List(Pair)) | Err([errorMsgStrings])
+    // At this point, we have List( Ok(Pair(lroID, status)) |  Err([errors])
+    // Consolidate, convert to Ok(List(Pair)) | Err([errors])
+    // (inverts structure from List(Ok|Err) to Ok(List) | Err(array of errors) )
     const reducedResult = processedPairList.reduce(
       liftA2(listPush),
       Ok(List([]))  // start with empty list
@@ -46,10 +48,10 @@ const _enhanceLROStatus = curry(
     // with enhanced entries. (If we have an Err, `map()` will be short-circuited and the Err will be returned)
     return reducedResult.map(
       list => {
-        const enhancedEntries = fromPairs(list)
+        const enhancedEntries = fromPairs(list) // convert back into object from k/v pairs
         return Object({
-          LROs: enhancedEntries,
-          summary: _sumEnhancedEntries(enhancedEntries)
+          LROs: enhancedEntries, // demote former top level keys, put under 'LROs'
+          summary: _sumEnhancedEntries(enhancedEntries) // 'summary' is new top level key
         })
       }
     )

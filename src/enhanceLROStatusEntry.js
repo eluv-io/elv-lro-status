@@ -54,14 +54,14 @@ const OptionsModel = require('./OptionsModel')
  * enhanceLROStatusEntry(options, singleLRO)          //=> Ok Pair('tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjJ2kukiD5NmnEgCP7iFFBjU', {...})
  *
  * // EXAMPLE: Failed call
- * enhanceLROStatusEntry(defaultOptions(), singleLRO) //=> Err [{errors: [...], errorDetails: [...]}]
+ * enhanceLROStatusEntry(defaultOptions(), singleLRO) //=> Err [error objects]
  *
  */
 // TODO: add example above
 const enhanceLROStatusEntry = curry(
   (options, lro) => validator(OptionsModel)(options).map(
-    processedOptions => lro.snd().run_state === ERS.STATE_RUNNING ?
-      _enhanceRunningEntry(processedOptions, lro) :
+    validatedOptions => lro.snd().run_state === ERS.STATE_RUNNING ?
+      _enhanceRunningEntry(validatedOptions, lro) :
       _enhanceNonRunningEntry(lro)
   )
 )

@@ -148,6 +148,8 @@ const STATE_STALLED = 'stalled'
 
 /**
  * An enhanced `run_state` (NOT used by Eluvio Content Fabric servers) to indicate that `run_state` cannot be determined.
+ * This is an internal initializer value used as a starting point for summarizing a list of states, and should never
+ * get returned to caller.
  *
  * @constant
  * @default

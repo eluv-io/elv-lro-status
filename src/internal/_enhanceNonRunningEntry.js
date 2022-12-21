@@ -1,5 +1,5 @@
-const clone = require('ramda/src/clone')
-const mergeRight = require('ramda/src/mergeRight')
+const clone = require('@eluvio/ramda-fork/src/clone')
+const mergeRight = require('@eluvio/ramda-fork/src/mergeRight')
 
 const Pair = require('@eluvio/elv-js-helpers/Pair')
 

@@ -1,3 +1,4 @@
+const assertionErrMsg = require('@eluvio/elv-js-helpers/assertionErrMsg')
 const defCheckedKVObjModel = require('@eluvio/elv-js-helpers/defCheckedKVObjModel')
 
 const LROIdModel = require('./LROIdModel')
@@ -6,9 +7,7 @@ const LROStatusEntryModel = require('./LROStatusEntryModel')
 /**
  * An [ObjectModel](http://objectmodel.js.org/) to validate the response from an LROStatus() API call
  *
- * Throws an exception if passed in an invalid value.
- *
- * Note that a completely empty object will pass this model's validation.
+ * Throws an exception if passed in an invalid value or an empty object.
  *
  * @class
  * @category Model
@@ -19,7 +18,7 @@ const LROStatusEntryModel = require('./LROStatusEntryModel')
  *
  * const LROStatusModel = require('@eluvio/elv-lro-status/LROStatusModel')
  *
- * LROStatusModel({})   //=> {} // proxied by ObjectModel
+ * LROStatusModel({})   //=> Exception: "Value must not be empty (got: {})"
  *
  * LROStatusModel({
  *    tlro1EjdMMAvWb5iJn2isHdgESes1dq12kpjXCExCepbpWfwMpo2haCxnh: {
@@ -55,6 +54,9 @@ const LROStatusModel = defCheckedKVObjModel(
   'LROStatus',
   LROIdModel,
   LROStatusEntryModel
+).assert(
+  x => Object.keys(x).length > 0,
+  assertionErrMsg('must not be empty')
 )
 
 module.exports = LROStatusModel

@@ -1,11 +1,11 @@
 const kindOf = require('kind-of')
 
-const find = require('ramda/src/find')
-const filter = require('ramda/src/filter')
-const last = require('ramda/src/last')
-const pluck = require('ramda/src/pluck')
-const sortBy = require('ramda/src/sortBy')
-const values = require('ramda/src/values')
+const find = require('@eluvio/ramda-fork/src/find')
+const filter = require('@eluvio/ramda-fork/src/filter')
+const last = require('@eluvio/ramda-fork/src/last')
+const pluck = require('@eluvio/ramda-fork/src/pluck')
+const sortBy = require('@eluvio/ramda-fork/src/sortBy')
+const values = require('@eluvio/ramda-fork/src/values')
 
 const _maxEnhancedState = require('./_maxEnhancedState')
 const {STATE_RUNNING} = require('../enhancedRunState')

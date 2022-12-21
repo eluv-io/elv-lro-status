@@ -1,4 +1,4 @@
-const path = require('ramda/src/path')
+const path = require('@eluvio/ramda-fork/src/path')
 
 /**
  * Retrieves progress percentage from LRO Status entry, protecting against missing keys
