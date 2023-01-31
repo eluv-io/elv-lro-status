@@ -17,7 +17,9 @@ const ERS = require('../../src/enhancedRunState')
 
 const dump = x => console.log(JSON.stringify(x, null, 2))
 
-// compute minimum possible 'current time' given LRO status return data
+// Compute minimum possible 'current time' given LRO status return data
+// (i.e. the last time the server touched the status data)
+// Returns a Javascript Date
 const testCaseMinCurrentTime = lroStatus => {
   // filter out non-running items
   const runningItems = R.filter(s => s.run_state === ERS.STATE_RUNNING, R.values(lroStatus))
@@ -50,6 +52,38 @@ const LRO_1_FINISHED_1_RUNNING = {
     run_state: 'running',
     start: '2022-04-08T21:05:00Z'
   }
+}
+
+const LRO_1_FINISHED_1_NO_PROGRESS = {
+  'tlro1EjchYzPaMx7VJV3JM8EmxaSfnyK4UDUp1rwBMcwwu7yXftKRfsPz4':
+    {
+      'desc': 'stream: video, offering: default, variant: default, masterHash: hq__7DGknRDhZrAcTH1rwF5ZjP6MjVHbYZNvuoKfCnAEJ8t6EAetSF5Mzvx5kjQuQaAYfQDWehQzJ2',
+      'duration': 0,
+      'duration_ms': 0,
+      'key': 'video.default.xcVideo.Docu_Brujas_ESP.mp4.tqw__HSWkzAJ4ak4Qpg9sJtMRUY6eg4bJakCphJGJZTLqHrUU5oaGz3eGQXKgEPaNkBCvRy8AAhrhvw9detQ4sEo',
+      'name': 'MEZMAKER VIDEO (stream key: video)',
+      'progress':
+        {
+          'percentage': 0
+        },
+      'run_state': 'running',
+      'start': '2023-01-31T21:57:39Z'
+    },
+  'tlro1EjchYzPaMx7VJV3JM8EmxaSfnyK4UDUpLK8VsuySE1V9YZvxGTyxK':
+    {
+      'desc': 'stream: audio, offering: default, variant: default, masterHash: hq__7DGknRDhZrAcTH1rwF5ZjP6MjVHbYZNvuoKfCnAEJ8t6EAetSF5Mzvx5kjQuQaAYfQDWehQzJ2',
+      'duration': 796383000000,
+      'duration_ms': 796383,
+      'end': '2023-01-31T22:10:56Z',
+      'key': 'audio.default.xcAudio.Docu_Brujas_ESP.mp4.tqw__HSWkzAJ4ak4Qpg9sJtMRUY6eg4bJakCphJGJZTLqHrUU5oaGz3eGQXKgEPaNkBCvRy8AAhrhvw9detQ4sEo',
+      'name': 'MEZMAKER AUDIO (stream key: audio)',
+      'progress':
+        {
+          'percentage': 100
+        },
+      'run_state': 'finished',
+      'start': '2023-01-31T21:57:39Z'
+    }
 }
 
 const LRO_NO_PROGRESS_YET = {
@@ -129,6 +163,11 @@ const optionsPlusTime = t => R.assoc('currentTime', t, defaultOptions())
 
 describe('enhanceLROStatus', function () {
 
+  const retVal1Running1NoProgress = enhanceLROStatus(
+    optionsPlusTime(testCaseMinCurrentTime(LRO_1_FINISHED_1_NO_PROGRESS)),
+    LRO_1_FINISHED_1_NO_PROGRESS
+  )
+
   const retVal2RunningNoProgress = enhanceLROStatus(
     optionsPlusTime(testCaseMinCurrentTime(TEST_CASE_2_RUNNING_NO_PROGRESS)),
     TEST_CASE_2_RUNNING_NO_PROGRESS
@@ -138,12 +177,21 @@ describe('enhanceLROStatus', function () {
     optionsPlusTime(testCaseMinCurrentTime(LRO_1_FINISHED_1_RUNNING)),
     LRO_1_FINISHED_1_RUNNING
   )
+
+  const retValRunningWithProgress_1SecLater = enhanceLROStatus(
+    optionsPlusTime(new Date(testCaseMinCurrentTime(LRO_1_FINISHED_1_RUNNING).valueOf() + 1000)),
+    LRO_1_FINISHED_1_RUNNING
+  )
+
   const retValRunningNoProgress = enhanceLROStatus(
     optionsPlusTime(testCaseMinCurrentTime(LRO_NO_PROGRESS_YET)),
     LRO_NO_PROGRESS_YET
   )
-  const stallTime = new Date()
-  stallTime.setTime(testCaseMinCurrentTime(LRO_1_FINISHED_1_RUNNING).getTime() + 1000 * (defaultOptions().stallThreshold + 60))
+
+  const stallTime = new Date(
+    testCaseMinCurrentTime(LRO_1_FINISHED_1_RUNNING).valueOf() +
+    1000 * (defaultOptions().stallThreshold + 60)
+  )
 
   const retValStalled = enhanceLROStatus(
     optionsPlusTime(stallTime),
@@ -167,6 +215,12 @@ describe('enhanceLROStatus', function () {
     if (!retValRunningWithProgress.ok) dump(retValRunningWithProgress)
     retValRunningWithProgress.ok.should.be.true
 
+    if (!retVal1Running1NoProgress.ok) dump(retVal1Running1NoProgress)
+    retVal1Running1NoProgress.ok.should.be.true
+
+    if (!retValRunningWithProgress_1SecLater.ok) dump(retValRunningWithProgress_1SecLater)
+    retValRunningWithProgress_1SecLater.ok.should.be.true
+
     if (!retValRunningNoProgress.ok) dump(retValRunningNoProgress)
     retValRunningNoProgress.ok.should.be.true
 
@@ -177,11 +231,21 @@ describe('enhanceLROStatus', function () {
     retValExtraData.ok.should.be.true
   })
 
-  it('should return extra data if present', ()=> {
+  it('should return extra data if present', () => {
     retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.progress.details.should.eql({})
     retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.desc.should.equal('description')
     retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.key.should.equal('LRO key')
     retValExtraData.result.LROs.tlro1EjdqrHgbbPyYcqzFMu7N59et384qkQwp4us7CTGq36GjZPptKgKHR.name.should.equal('LRO name')
+    retVal1Running1NoProgress.result.LROs.tlro1EjchYzPaMx7VJV3JM8EmxaSfnyK4UDUp1rwBMcwwu7yXftKRfsPz4.name.should.equal('MEZMAKER VIDEO (stream key: video)')
+  })
+
+
+  it('should return expected data for "1 finished, 1 no progress case', () => {
+    console.log(JSON.stringify(retVal1Running1NoProgress,null,2))
+    retVal1Running1NoProgress.result.summary.run_state.should.equal('running')
+    retVal1Running1NoProgress.result.summary.estimated_time_left_h_m_s.should.equal('unknown (not enough progress yet)')
+    kindOf(retVal1Running1NoProgress.result.summary.estimated_time_left_seconds).should.equal('undefined')
+    kindOf(retVal1Running1NoProgress.result.summary.eta_local).should.equal('undefined')
   })
 
   // note: this test depends on system locale and time zone
@@ -192,8 +256,13 @@ describe('enhanceLROStatus', function () {
     retValRunningWithProgress.result.summary.eta_local.should.equal('2:35:13 PM PDT')
   })
 
+  it('should decrement ETA according to time elapsed since last update', () => {
+    retValRunningWithProgress_1SecLater.result.summary.estimated_time_left_seconds.should.equal(422)
+  })
+
   it('should return summary status of "running" for non-stalled running LRO', () => {
     retValRunningWithProgress.result.summary.run_state.should.equal(ERS.STATE_RUNNING)
+    retValRunningWithProgress_1SecLater.result.summary.run_state.should.equal(ERS.STATE_RUNNING)
     retValRunningNoProgress.result.summary.run_state.should.equal(ERS.STATE_RUNNING)
   })
 

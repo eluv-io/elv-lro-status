@@ -93,7 +93,8 @@ const _enhanceRunningEntry = (options, lro) => {
   const start = utcStrToDate(statusEntry.start)
   const actualElapsedSeconds = (options.currentTime - start) / 1000
   const reportedElapsed = statusEntry.duration_ms / 1000
-  const secondsSinceLastUpdate = Math.round(actualElapsedSeconds - reportedElapsed)
+  const timeSinceLastUpdate = actualElapsedSeconds - reportedElapsed
+  const secondsSinceLastUpdate = Math.round(timeSinceLastUpdate)
 
   const mergeFields = {seconds_since_last_update: secondsSinceLastUpdate}
 
@@ -104,10 +105,12 @@ const _enhanceRunningEntry = (options, lro) => {
   const progressPct = _progressPct(statusEntry)
 
   // if 0 < progress <= 100 and elapsed > 0, calc ETA
-  if (progressPct > 0 && progressPct <= 100 && actualElapsedSeconds > 0) {
-    estRemainingDur(actualElapsedSeconds, progressPct / 100).map(
+  if (progressPct > 0 && progressPct <= 100 && reportedElapsed > 0) {
+    estRemainingDur(reportedElapsed, progressPct / 100).map(
       estSecondsLeft => {
-        const roundedSecondsLeft = Math.round(estSecondsLeft)
+        let adjustedEst = estSecondsLeft - timeSinceLastUpdate
+        if (adjustedEst < 0) adjustedEst=0
+        const roundedSecondsLeft = Math.round( adjustedEst)
         mergeFields.estimated_time_left_seconds = roundedSecondsLeft
         mergeFields.estimated_time_left_h_m_s = etaDurationStr(roundedSecondsLeft)
         mergeFields.eta_local = etaTimeStr(

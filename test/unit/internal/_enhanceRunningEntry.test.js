@@ -36,9 +36,9 @@ describe('_enhanceRunningEntry', function () {
         'run_state': 'running',
         'start': '2022-04-08T21:05:00Z',
         'seconds_since_last_update': 359,
-        'estimated_time_left_seconds': 533,
-        'estimated_time_left_h_m_s': '8m 53s',
-        'eta_local': '2:43:03 PM PDT'
+        'estimated_time_left_seconds': 64,
+        'estimated_time_left_h_m_s': '1m 04s',
+        'eta_local': '2:35:14 PM PDT'
       })
     )
 
@@ -75,9 +75,9 @@ describe('_enhanceRunningEntry', function () {
           'run_state': 'stalled',
           'start': '2022-04-08T21:05:00Z',
           'seconds_since_last_update': 3959,
-          'estimated_time_left_seconds': 1628,
-          'estimated_time_left_h_m_s': '27m 08s',
-          'eta_local': '4:01:18 PM PDT',
+          'estimated_time_left_seconds': 0,
+          'estimated_time_left_h_m_s': '0s',
+          'eta_local': '3:34:10 PM PDT',
           'reported_run_state': 'running',
           'warning': 'status has not been updated in 3959 seconds, process may have terminated'
         }
