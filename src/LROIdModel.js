@@ -1,6 +1,6 @@
 const defRegexMatchedStrModel = require('@eluvio/elv-js-helpers/defRegexMatchedStrModel')
 
-const _LRO_ID_REGEX = /^tlro[1-9A-HJ-NP-Za-km-z]+$/
+const _LRO_ID_REGEX = /(^tlro[1-9A-HJ-NP-Za-km-z]+$)|(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)/
 
 /**
  * An [ObjectModel](http://objectmodel.js.org/) which validates that an input
